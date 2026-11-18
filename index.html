@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dario's Idea Lab</title>
+  <meta name="description" content="A running list of Dario's product, app, content and business ideas — good, bad and unhinged." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { display: ['Anton', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: { ink: '#150505', ember: '#F0331F' },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { background: #150505; }
+    .blob { position: fixed; border-radius: 9999px; filter: blur(90px); opacity: .32; pointer-events: none; z-index: 0;
+            animation: drift 18s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(60px,-40px) scale(1.15); } }
+    .glow { text-shadow: 0 0 24px rgba(240,51,31,.55); }
+    .outline-num { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.18); transition: -webkit-text-stroke-color .4s, color .4s; }
+
+    /* Full-width rows */
+    .row { position: relative; isolation: isolate; overflow: hidden; }
+    .row::before {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(90deg, #F0331F 0%, #b3180a 100%);
+      transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.7,0,.2,1);
+    }
+    .row:hover::before, .row.spotlight::before { transform: scaleX(1); }
+    .row:hover .outline-num, .row.spotlight .outline-num { -webkit-text-stroke-color: rgba(255,255,255,.9); }
+    .row:hover .cat, .row.spotlight .cat, .row:hover .desc, .row.spotlight .desc { color: rgba(255,255,255,.9); }
+    .row:hover .emoji, .row.spotlight .emoji { transform: rotate(-12deg) scale(1.25); }
+    .row:hover .title, .row.spotlight .title { transform: translateX(14px); }
+    .emoji, .title { transition: transform .5s cubic-bezier(.7,0,.2,1); }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    .marquee { animation: marquee 40s linear infinite; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  </style>
+</head>
+<body class="font-sans text-neutral-200 min-h-screen antialiased">
+  <div class="blob w-96 h-96 bg-ember -top-24 -left-24"></div>
+  <div class="blob w-[28rem] h-[28rem] bg-rose-900 bottom-0 right-0" style="animation-delay:-6s"></div>
+
+  <main class="relative z-10">
+    <header class="max-w-7xl mx-auto px-5 sm:px-10 pt-16 pb-10">
+      <p class="uppercase tracking-[.4em] text-xs text-ember mb-4">Dario's</p>
+      <h1 class="font-display text-[22vw] sm:text-[16vw] lg:text-[12rem] text-white glow leading-[.85] tracking-tight">IDEA<br/>LAB<span class="text-ember">.</span></h1>
+      <div class="mt-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <p class="max-w-md text-lg text-neutral-400">
+          A running list of apps, products, sites and schemes. Some genius, some terrible, some both.
+        </p>
+        <div id="stats" class="flex flex-wrap gap-3 text-sm"></div>
+      </div>
+    </header>
+
+    <div class="overflow-hidden border-y border-white/10 py-3 mb-0 bg-ember/10">
+      <div class="marquee flex w-max gap-10 font-display text-2xl text-ember/80 whitespace-nowrap" id="marquee"></div>
+    </div>
+
+    <section class="sticky top-0 z-20 py-4 bg-ink/90 backdrop-blur border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-5 sm:px-10">
+      <div class="flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between">
+        <div id="filters" class="flex flex-wrap gap-2"></div>
+        <div class="flex gap-2 items-center">
+          <input id="search" type="search" placeholder="Search ideas…"
+            class="w-full lg:w-56 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm placeholder-neutral-500 focus:outline-none focus:border-ember" />
+          <button id="random" title="Random idea"
+            class="shrink-0 bg-ember hover:bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-full transition">🎲</button>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <section id="grid" class="border-t border-white/10"></section>
+    <p id="empty" class="hidden text-center text-neutral-500 py-24 text-lg">No ideas match that. Yet.</p>
+
+    <footer class="max-w-7xl mx-auto px-5 sm:px-10 py-20 flex flex-col sm:flex-row justify-between gap-4 text-sm text-neutral-600">
+      <span class="font-display text-4xl text-white/10">THAT'S ALL. FOR NOW.</span>
+      <span>© <span id="year"></span> Dario · All ideas free to steal, none guaranteed to work</span>
+    </footer>
+  </main>
+
+  <script>
+    // ---- Edit your ideas here ----
+    // cat: Apps | Social | Dating | Products | Services | Content | Games
+    // nsfw: true hides the idea unless "Show 18+" is ticked
+    const ideas = [
+      { name: 'Church Givings', emoji: '⛪', cat: 'Services', desc: 'An app that lets churches collect donations online, taking a small percentage of each one. Win over the priests and they promote it for you.' },
+      { name: 'Would You Do It for a Dollar?', emoji: '💵', cat: 'Social', desc: 'Like Fiverr, but social. "I dare you to do this for $X." People post dares, others take the money.' },
+      { name: 'You Got a Dollar?', emoji: '🪙', cat: 'Social', desc: 'Online panhandling, plain and simple. Just like asking on the street, but people send you a dollar on the internet.' },
+      { name: 'Selling Fog', emoji: '🌫️', cat: 'Products', desc: 'Literally fog in a jar. That’s the product.' },
+      { name: 'iEgg', emoji: '🥚', cat: 'Products', desc: 'A regular egg with an Apple logo on it. $99.' },
+      { name: 'Voting', emoji: '🗳️', cat: 'Services', desc: 'A system that lets people vote online instead of going to a physical polling place.' },
+      { name: 'Push-Only Messenger', emoji: '🔔', cat: 'Apps', desc: 'A messaging app with no UI at all. You read and send everything through push notifications.' },
+      { name: 'But First, Let Me Take a Selfie', emoji: '🤳', cat: 'Apps', desc: 'A camera app with zero buttons. You take selfies using only hand gestures.' },
+      { name: 'Don’t Meet in Person', emoji: '💻', cat: 'Dating', desc: 'A dating app or network where the whole point is that you never meet IRL. Online only, forever.' },
+      { name: 'Stupid People Repellent', emoji: '🧴', cat: 'Products', desc: 'A spray bottle that says "Stupid People Repellent" on it.' },
+      { name: 'Alien Emoji', emoji: '👽', cat: 'Apps', desc: 'Normal emoticons with double eyes: ::D ::) ::P. The alien emoji set.' },
+      { name: 'Clout Farm', emoji: '🤖', cat: 'Social', desc: 'A social app where every follower, like and comment is fake, all generated by AI.' },
+      { name: 'Hangover', emoji: '🍻', cat: 'Social', desc: 'A place that only hosts drunk photos, so you can look through them the next morning.' },
+      { name: 'RentACock', emoji: '🍆', cat: 'Dating', nsfw: true, desc: 'On-demand escort booking, Uber-style.' },
+      { name: 'Face First', emoji: '📸', cat: 'Dating', desc: 'A gay dating app where a face pic is mandatory, because on most gay apps nobody shows their face.' },
+      { name: 'Hate Comment Removal', emoji: '🧹', cat: 'Services', desc: 'Automatically finds and removes hate comments across your social media accounts.' },
+      { name: 'OnlyHaters', emoji: '😤', cat: 'Social', desc: 'OnlyFans, but for haters.' },
+      { name: 'News Excerpt Summary', emoji: '📰', cat: 'Apps', desc: 'A news site that gives you every story in 2–3 sentences. That’s it.' },
+      { name: 'Bluetooth Chat', emoji: '📶', cat: 'Apps', desc: 'A chat that works only over Bluetooth, so you can only talk to people physically near you.' },
+      { name: 'Opposite Day', emoji: '🙃', cat: 'Social', desc: 'A social network where everything is reversed: downvotes are good, unfollowing is love.' },
+      { name: 'Real Movie Spoilers', emoji: '🎬', cat: 'Content', desc: 'A YouTube channel that actually spoils movies: the full plot, the twist, the ending, plus a reaction.' },
+      { name: 'Eau de Nether', emoji: '🌸', cat: 'Products', nsfw: true, desc: 'A perfume that smells like genitals. (Is that just urine? Probably.)' },
+      { name: 'Show & Tell', emoji: '📖', cat: 'Products', nsfw: true, desc: 'A picture book for adults, illustrating exactly what you think it illustrates.' },
+      { name: 'Explain Like I’m 5', emoji: '🧒', cat: 'Apps', desc: 'An AI explainer that breaks anything down into the simplest possible terms.' },
+      { name: 'SatanMail', emoji: '😈', cat: 'Services', desc: 'Like letters from Santa, but the emails come from Satan.' },
+      { name: 'Ringtone Roast', emoji: '📱', cat: 'Products', desc: 'Selling funny ringtones.' },
+      { name: 'Porn Dub', emoji: '🎙️', cat: 'Content', nsfw: true, desc: 'Dubbing porn clips into your own language, like cartoon dubs. (Problem: it’s content theft.)' },
+      { name: 'You Control My Life', emoji: '🕹️', cat: 'Content', desc: 'People pay to tell me what to do, and I do it.' },
+      { name: 'Fake DJ', emoji: '🎧', cat: 'Content', desc: 'A YouTube channel where you play a DJ at a luxury mansion. None of it is real.' },
+      { name: 'Stay in Touch', emoji: '💬', cat: 'Apps', desc: 'A messenger that pings the people you pick every couple of weeks, so you actually keep in touch.' },
+      { name: 'FilthyChat AI', emoji: '🔥', cat: 'Apps', nsfw: true, desc: 'A hardcore sexting AI chat.' },
+      { name: 'Airbnb Hourly', emoji: '🛏️', cat: 'Services', desc: 'Rooms by the hour, for people who need privacy but don’t have a place of their own: lovers, strangers, closeted couples.' },
+      { name: 'Online Girlfriend', emoji: '💋', cat: 'Dating', nsfw: true, desc: 'A paid girlfriend-experience platform connecting customers willing to pay with anonymous girls who want to earn.' },
+      { name: 'Split the Fans', emoji: '🧾', cat: 'Services', nsfw: true, desc: 'Buy one fan-site subscription for $10 and resell access to five people at $2 each to cover the cost.' },
+      { name: 'Is It Worth It?', emoji: '⭐', cat: 'Content', nsfw: true, desc: 'We subscribe to OnlyFans accounts and review them, with a few samples, so you know whether it’s worth subscribing.' },
+      { name: 'PornNews', emoji: '📺', cat: 'Content', nsfw: true, desc: 'A porn site designed to look like a news website.' },
+      { name: 'Moanflix', emoji: '🍿', cat: 'Content', nsfw: true, desc: 'A Netflix-style porn site: rows, categories, autoplay, "continue watching".' },
+      { name: 'Corruption App', emoji: '🤫', cat: 'Apps', desc: 'An app for "safe" corruption, where your correspondence can never be uncovered.' },
+      { name: 'Only Camera', emoji: '📷', cat: 'Apps', desc: 'A social app where you can only post photos taken right then in the app. No uploads, no AI slop.' },
+      { name: 'Celebrity News', emoji: '🌟', cat: 'Content', desc: 'Coverage of every single thing a celebrity does. Drank water? Breaking news.' },
+      { name: 'Gesture Pet', emoji: '🐣', cat: 'Games', desc: 'A virtual pet you care for with gestures. Yell into the mic to boost its energy, cover your eyes when it needs the bathroom, shake the phone to play.' },
+      { name: 'Sneaky Sip', emoji: '🎒', cat: 'Products', desc: 'A bag designed for smuggling alcohol in.' },
+      { name: 'Bare Minimum', emoji: '👙', cat: 'Products', nsfw: true, desc: 'Lingerie that covers the absolute minimum: a bra that covers only the nipples, and matching briefs.' },
+      { name: 'Real 24-Hour Challenge', emoji: '⏰', cat: 'Content', desc: 'A 24-hour challenge that’s actually 24 hours, livestreamed start to finish.' },
+      { name: 'Moan Game', emoji: '🎮', cat: 'Games', nsfw: true, desc: 'Control your character by moaning into the mic.' },
+      { name: 'BabyMaker3000', emoji: '👶', cat: 'Products', desc: 'The name says it all. Details classified.' },
+      { name: 'Maison Déchet', emoji: '💎', cat: 'Products', desc: 'A luxury brand selling absurdly overpriced garbage, like a roll of masking tape sold as a bracelet.' },
+      { name: 'Beep Talk', emoji: '🔊', cat: 'Apps', desc: 'A messaging app where you send push notifications that are just different sounds.' },
+      { name: 'Kokošinjac', emoji: '🐔', cat: 'Social', desc: 'The henhouse: a community gossip forum about celebrities and what’s happening right now. Fun, but all that gossip can be dangerous.' },
+      { name: 'Brave Mode', emoji: '💘', cat: 'Dating', desc: 'Everything is a dating app if you’re brave enough. A Chrome extension that turns other websites, like LinkedIn, into dating apps.' },
+      { name: 'Hammered Hero', emoji: '🦸', cat: 'Content', desc: 'An AI series about me as a drunk guy with superpowers, flying and bulletproof, doing good deeds in the most destructive way possible.' },
+    ];
+    // ------------------------------
+
+    const catColors = {
+      Apps: 'text-sky-300', Social: 'text-violet-300', Dating: 'text-pink-300', Products: 'text-amber-300',
+      Services: 'text-emerald-300', Content: 'text-orange-300', Games: 'text-lime-300',
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let activeCat = 'All', query = '', showNsfw = true;
+
+    const visibleBase = () => ideas.filter(i => showNsfw || !i.nsfw);
+
+    function renderStats() {
+      const base = visibleBase();
+      const cats = new Set(base.map(i => i.cat)).size;
+      const hidden = ideas.length - base.length;
+      $('stats').innerHTML = [[base.length, 'ideas'], [cats, 'categories'], ...(hidden ? [[hidden, 'hidden (18+)']] : [])]
+        .map(([n, l]) => `<div class="px-4 py-2 rounded-full bg-white/5 border border-white/10"><span class="text-white font-semibold">${n}</span> <span class="text-neutral-400">${l}</span></div>`).join('');
+    }
+
+    function renderFilters() {
+      const base = visibleBase();
+      const cats = ['All', ...Object.keys(catColors).filter(c => base.some(i => i.cat === c))];
+      if (!cats.includes(activeCat)) activeCat = 'All';
+      $('filters').innerHTML = cats.map(c => {
+        const n = c === 'All' ? base.length : base.filter(i => i.cat === c).length;
+        return `<button data-cat="${c}" class="px-3.5 py-1.5 rounded-full text-sm border transition ${c === activeCat
+          ? 'bg-ember border-ember text-white' : 'bg-white/5 border-white/10 text-neutral-300 hover:border-ember/60'}">${c} <span class="opacity-60">${n}</span></button>`;
+      }).join('');
+    }
+
+    function filtered() {
+      const q = query.trim().toLowerCase();
+      return visibleBase().filter(i =>
+        (activeCat === 'All' || i.cat === activeCat) &&
+        (!q || `${i.name} ${i.desc} ${i.cat}`.toLowerCase().includes(q)));
+    }
+
+    function renderGrid() {
+      const list = filtered();
+      $('empty').classList.toggle('hidden', list.length > 0);
+      $('grid').innerHTML = list.map(i => {
+        const num = String(ideas.indexOf(i) + 1).padStart(2, '0');
+        return `
+        <article id="idea-${num}" class="row reveal border-b border-white/10">
+          <div class="max-w-7xl mx-auto px-5 sm:px-10 py-10 sm:py-14 grid grid-cols-12 gap-x-6 gap-y-4 items-center">
+            <div class="col-span-12 lg:col-span-2 flex lg:flex-col items-center lg:items-start gap-4">
+              <span class="outline-num font-display text-6xl sm:text-7xl leading-none">${num}</span>
+              <span class="emoji text-4xl sm:text-5xl inline-block">${i.emoji}</span>
+            </div>
+            <div class="col-span-12 lg:col-span-6">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="cat text-xs uppercase tracking-[.3em] ${catColors[i.cat]} transition-colors">${esc(i.cat)}</span>
+                ${i.nsfw ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-ember">18+</span>' : ''}
+              </div>
+              <h2 class="title font-display uppercase text-5xl sm:text-6xl lg:text-7xl text-white leading-[.95] tracking-tight break-words">${esc(i.name)}</h2>
+            </div>
+            <p class="desc col-span-12 lg:col-span-4 text-lg sm:text-xl text-neutral-400 leading-relaxed transition-colors">${esc(i.desc)}</p>
+          </div>
+        </article>`;
+      }).join('');
+      observeRows();
+    }
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    function observeRows() { document.querySelectorAll('.row.reveal').forEach(r => io.observe(r)); }
+
+    function renderMarquee() {
+      const names = ideas.map(i => `${esc(i.name)} <span class="text-white/30">✦</span>`).join(' ');
+      $('marquee').innerHTML = `<span>${names}</span><span>${names}</span>`;
+    }
+
+    function renderAll() { renderStats(); renderFilters(); renderGrid(); }
+
+    $('filters').addEventListener('click', e => {
+      const b = e.target.closest('button[data-cat]'); if (!b) return;
+      activeCat = b.dataset.cat; renderFilters(); renderGrid();
+    });
+    $('search').addEventListener('input', e => { query = e.target.value; renderGrid(); });
+    $('random').addEventListener('click', () => {
+      const list = filtered(); if (!list.length) return;
+      const pick = list[Math.floor(Math.random() * list.length)];
+      const el = $(`idea-${String(ideas.indexOf(pick) + 1).padStart(2, '0')}`);
+      document.querySelectorAll('.spotlight').forEach(x => x.classList.remove('spotlight'));
+      el.classList.add('in');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('spotlight');
+      setTimeout(() => el.classList.remove('spotlight'), 2500);
+    });
+
+    $('year').textContent = new Date().getFullYear();
+    renderMarquee();
+    renderAll();
+  </script>
+</body>
+</html>
