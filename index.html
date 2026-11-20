@@ -190,7 +190,7 @@
       { name: 'Bare Minimum', emoji: '👙', cat: 'Products', nsfw: true, desc: 'Lingerie that covers the absolute minimum: a bra that covers only the nipples, and matching briefs.' },
       { name: 'Real 24-Hour Challenge', emoji: '⏰', cat: 'Content', desc: 'A 24-hour challenge that’s actually 24 hours, livestreamed start to finish.' },
       { name: 'Moan Game', emoji: '🎮', cat: 'Games', nsfw: true, desc: 'Control your character by moaning into the mic.' },
-      { name: 'BabyMaker3000', emoji: '👶', cat: 'Products', desc: 'The name says it all. Details classified.' },
+      { name: 'BabyMaker3000', emoji: '👶', cat: 'Products', nsfw: true, desc: 'A condom with a hole right in the middle, sold as a gag novelty gift. The name says it all.' },
       { name: 'Maison Déchet', emoji: '💎', cat: 'Products', desc: 'A luxury brand selling absurdly overpriced garbage, like a roll of masking tape sold as a bracelet.' },
       { name: 'Beep Talk', emoji: '🔊', cat: 'Apps', desc: 'A messaging app where you send push notifications that are just different sounds.' },
       { name: 'Kokošinjac', emoji: '🐔', cat: 'Social', desc: 'The henhouse: a community gossip forum about celebrities and what’s happening right now. Fun, but all that gossip can be dangerous.' },
@@ -1651,25 +1651,58 @@
       });
     });
 
-    def('BabyMaker3000', 'Classified. Hover the redactions. Guess the clearance code.', (el) => {
+    def('BabyMaker3000', 'Open the box, hold the wrapper up to the light, write a gift tag. Novelty only.', (el) => {
       const [q] = sel(el);
-      let tries = 0;
-      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
-        <div class="rounded-2xl bg-[#e9e2cf] text-[#2a2418] p-6 font-mono text-sm relative shadow-2xl"><div class="absolute top-4 right-4 border-2 border-red-700 text-red-700 px-2 py-0.5 rotate-6 font-bold text-xs">TOP SECRET</div>
-          <div class="font-bold text-lg mb-1">PROJECT: BABYMAKER3000</div><div class="mb-4 text-xs">FILE #3000 · CLEARANCE LEVEL: ROMANTIC</div>
-          <p class="leading-7">The device combines <span class="redact px-1">mood lighting</span>, a <span class="redact px-1">Barry White playlist</span> and an automated <span class="redact px-1">candle dispenser</span>. Operation takes approximately <span class="redact px-1">4 minutes (optimistic)</span>. Side effects include <span class="redact px-1">twins</span>, <span class="redact px-1">18 years of expenses</span> and <span class="redact px-1">a minivan</span>.</p></div>
-        <div class="${CARD} space-y-4"><div class="font-display text-2xl text-white">ENTER CLEARANCE CODE</div><form data-form class="flex gap-2"><input data-in maxlength="10" class="${IN} flex-1 font-mono tracking-[.3em]" placeholder="••••"><button class="${B}">Unlock</button></form><div data-msg class="text-sm min-h-[1.25rem]"></div><div data-reveal></div></div></div>`;
-      q('form').onsubmit = e => {
-        e.preventDefault(); const v = q('in').value.trim(); q('in').value = ''; tries++;
-        if (v === '3000' || tries >= 4) {
-          q('msg').className = 'text-sm text-emerald-400'; q('msg').textContent = v === '3000' ? '✅ ACCESS GRANTED' : '✅ ACCESS GRANTED (we felt sorry for you)';
-          q('reveal').innerHTML = `<div class="pop rounded-xl bg-white/5 p-4"><div class="text-6xl mb-2">🛏️🕯️🎶👶</div><div class="text-white">It’s a bed with a built-in Bluetooth speaker that only plays slow jams.</div><div class="text-xs text-neutral-500 mt-2">Lifetime warranty: 18 years. Hint for next time: the code was in the name.</div></div>`;
-          seq([392, 523, 659, 784], .15, 'sine');
-        } else {
-          q('msg').className = 'text-sm text-ember'; q('msg').textContent = `⛔ ACCESS DENIED (${tries}/3)` + (tries === 3 ? ' — hint: read the name again.' : '');
-          const f = q('form'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); seq([880, 660, 880, 660], .1, 'square', .06);
-        }
+      let opened = false, lit = false, cart = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex flex-col items-center gap-4">
+          <div class="relative w-72 h-72 grid place-items-center" style="perspective:900px">
+            <div data-box class="absolute inset-6 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-700 shadow-2xl p-5 flex flex-col justify-between text-white transition-all duration-700 origin-bottom">
+              <div class="flex justify-between items-start"><span class="text-[10px] tracking-[.3em] uppercase">Novelty Co.</span><span class="text-[10px] font-bold bg-white text-blue-700 px-2 rounded">GAG GIFT</span></div>
+              <div><div class="font-display text-4xl leading-none">BABYMAKER<span class="text-amber-300">3000</span></div><div class="text-xs opacity-80 mt-1">The condom that doesn’t. 👶</div></div>
+              <div class="text-[9px] font-bold bg-black/30 rounded px-2 py-1">NOT A CONTRACEPTIVE · PROTECTS AGAINST NOTHING</div>
+            </div>
+            <div data-foil class="absolute w-44 h-44 rounded-xl grid place-items-center opacity-0 scale-75 transition-all duration-700 pointer-events-none" style="background:linear-gradient(135deg,#d4d4d8,#a1a1aa 40%,#e4e4e7 60%,#71717a)">
+              <div class="w-28 h-28 rounded-full border-4 border-dashed border-zinc-500/60 grid place-items-center"><div data-hole class="w-2.5 h-2.5 rounded-full bg-zinc-700 transition-all duration-500"></div></div>
+              <div class="absolute bottom-2 text-[9px] font-bold text-zinc-700 tracking-widest">FOR LAUGHS ONLY</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap justify-center gap-2"><button data-open class="${B}">📦 Open the box</button><button data-light class="${G}" disabled>🔦 Hold up to the light</button></div>
+          <div data-msg class="text-sm text-neutral-300 min-h-[1.25rem] text-center"></div>
+        </div>
+        <div class="space-y-4">
+          <div class="rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm px-4 py-3">⚠️ A novelty to laugh at, not to use. Secretly giving one to a partner to actually use is reproductive coercion, and a crime in many countries. A real version should be impossible to use, e.g. sealed in an acrylic block.</div>
+          <div class="${CARD} space-y-3"><div class="${LBL}">Perfect for</div><div class="flex flex-wrap gap-2">${['Bachelor parties', 'Baby showers', 'White elephant', 'Your friend who “isn’t ready yet”', 'The office Secret Santa you want to get fired from'].map(t => `<span class="text-xs px-3 py-1 rounded-full bg-white/10 text-neutral-300">${t}</span>`).join('')}</div></div>
+          <form data-form class="${CARD} space-y-3"><div class="${LBL}">Gift tag</div><div class="flex gap-2"><input data-to maxlength="24" class="${IN} flex-1" placeholder="To… (e.g. Marko)"><button class="${G}">✍️ Write</button></div><div data-tag class="min-h-[2.5rem]"></div></form>
+          <div class="flex flex-wrap items-center gap-4"><span class="font-display text-4xl text-white">$9.99</span><button data-buy class="${B}">Add to cart</button><span data-cart class="text-sm text-neutral-400"></span></div>
+        </div></div>`;
+      const setLight = on => {
+        lit = on; const h = q('hole');
+        h.style.width = h.style.height = on ? '2.75rem' : '';
+        h.style.background = on ? '#fef3c7' : '';
+        h.style.boxShadow = on ? '0 0 30px 12px rgba(253,230,138,.8)' : '';
+        q('light').textContent = on ? '🔦 Lower it' : '🔦 Hold up to the light';
       };
+      q('open').onclick = () => {
+        opened = !opened;
+        q('box').style.transform = opened ? 'rotateX(70deg) translateY(60px)' : '';
+        q('box').style.opacity = opened ? .25 : 1;
+        const f = q('foil'); f.style.opacity = opened ? 1 : 0; f.style.transform = opened ? 'scale(1)' : 'scale(.75)';
+        q('light').disabled = !opened; q('open').textContent = opened ? '📦 Close the box' : '📦 Open the box';
+        if (!opened) setLight(false);
+        q('msg').textContent = opened ? 'A perfectly normal-looking wrapper… or is it?' : '';
+        sweep(900, 500, .2, 'triangle', 0, .05);
+      };
+      q('light').onclick = () => {
+        setLight(!lit);
+        q('msg').textContent = lit ? 'There it is. Dead centre. Congratulations, it’s a gag. 🍼' : 'Nothing to see here.';
+        if (lit) seq([392, 523, 659, 784], .12, 'sine');
+      };
+      q('form').onsubmit = e => {
+        e.preventDefault(); const n = q('to').value.trim() || 'you';
+        q('tag').innerHTML = `<div class="pop inline-block bg-[#fdf6e3] text-[#3b2a14] px-4 py-2 rounded shadow -rotate-2" style="font-family:'Comic Sans MS','Marker Felt',cursive">🏷️ ${esc(pick([`To ${n}: the grandparents asked me to give you this.`, `To ${n}: thinking of your future. All 18 years of it.`, `To ${n}: for display only. Seriously. Frame it.`, `To ${n}: you’ve been pranked. Please don’t use this.`]))}</div>`;
+      };
+      q('buy').onclick = () => { cart++; q('cart').textContent = `🛒 ${cart} in cart. Ships with a “You’ve been pranked” card.`; tone(1046, .1, 'triangle'); };
     });
 
     def('Maison Déchet', 'Browse the collection. Click a piece for its certificate of authenticity.', (el) => {
