@@ -8,12 +8,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { display: ['Anton', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+          fontFamily: { display: ['Anton', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'], serif: ['"Playfair Display"', 'Georgia', 'serif'] },
           colors: { ink: '#150505', ember: '#F0331F' },
         },
       },
@@ -27,25 +27,72 @@
     .glow { text-shadow: 0 0 24px rgba(240,51,31,.55); }
     .outline-num { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.18); transition: -webkit-text-stroke-color .4s, color .4s; }
 
-    /* Full-width rows */
-    .row { position: relative; isolation: isolate; overflow: hidden; }
+    /* Full-width rows (clickable headers) */
+    .item { scroll-margin-top: 90px; }
+    .row { position: relative; isolation: isolate; overflow: hidden; cursor: pointer; outline: none; }
     .row::before {
       content: ''; position: absolute; inset: 0; z-index: -1;
       background: linear-gradient(90deg, #F0331F 0%, #b3180a 100%);
       transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.7,0,.2,1);
     }
-    .row:hover::before, .row.spotlight::before { transform: scaleX(1); }
-    .row:hover .outline-num, .row.spotlight .outline-num { -webkit-text-stroke-color: rgba(255,255,255,.9); }
-    .row:hover .cat, .row.spotlight .cat, .row:hover .desc, .row.spotlight .desc { color: rgba(255,255,255,.9); }
-    .row:hover .emoji, .row.spotlight .emoji { transform: rotate(-12deg) scale(1.25); }
-    .row:hover .title, .row.spotlight .title { transform: translateX(14px); }
+    .row:hover::before, .row.spotlight::before, .row:focus-visible::before, .item.open .row::before { transform: scaleX(1); }
+    .row:hover .outline-num, .row.spotlight .outline-num, .item.open .outline-num { -webkit-text-stroke-color: rgba(255,255,255,.9); }
+    .row:hover .cat, .row.spotlight .cat, .row:hover .desc, .row.spotlight .desc,
+    .item.open .cat, .item.open .desc { color: rgba(255,255,255,.9); }
+    .row:hover .try, .item.open .try, .row.spotlight .try { color: #fff; }
+    .row:hover .emoji, .row.spotlight .emoji, .item.open .emoji { transform: rotate(-12deg) scale(1.25); }
+    .row:hover .title, .row.spotlight .title, .item.open .title { transform: translateX(14px); }
     .emoji, .title { transition: transform .5s cubic-bezier(.7,0,.2,1); }
+    .chev { display: inline-block; transition: transform .4s cubic-bezier(.7,0,.2,1); }
+    .item.open .chev { transform: rotate(45deg); }
+
+    .panel { animation: panelIn .55s cubic-bezier(.2,.7,.2,1); background: linear-gradient(180deg, rgba(179,24,10,.35), rgba(21,5,5,0) 140px); }
+    @keyframes panelIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
 
     .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); }
     .reveal.in { opacity: 1; transform: none; }
 
     .marquee { animation: marquee 40s linear infinite; }
     @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ---- Demo kit ---- */
+    .phone { position: relative; width: 290px; max-width: 100%; height: 560px; border-radius: 46px; padding: 10px; background: #0a0a0a;
+             box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 40px 80px -30px rgba(240,51,31,.45); }
+    .phone::after { content: ''; position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 84px; height: 22px; border-radius: 99px; background: #0a0a0a; z-index: 30; }
+    .phone-screen { position: relative; height: 100%; border-radius: 36px; overflow: hidden; background: #fff; color: #111; }
+    .pop { animation: pop .35s cubic-bezier(.2,1.4,.4,1); }
+    @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .float-up { animation: floatUp 1.2s ease-out forwards; }
+    @keyframes floatUp { to { transform: translateY(-110px) scale(1.3); opacity: 0; } }
+    .notif { animation: slideDown .45s cubic-bezier(.2,1.2,.4,1); }
+    @keyframes slideDown { from { transform: translateY(-140%); opacity: 0; } to { transform: none; opacity: 1; } }
+    .notif-out { transition: .3s; opacity: 0; transform: translateX(110%); }
+    .shake { animation: shake .45s; }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px) rotate(-3deg); } 40% { transform: translateX(10px) rotate(3deg); } 60% { transform: translateX(-7px); } 80% { transform: translateX(7px); } }
+    .wobble { animation: wobble 2.4s ease-in-out infinite; }
+    @keyframes wobble { 0%,100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(4deg) translateY(-4px); } }
+    .spin { animation: spin 1.8s linear infinite; }
+    .spin.fast { animation-duration: .6s; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .puff { position: absolute; width: 75%; height: 55%; border-radius: 50%; background: #fff; filter: blur(16px);
+            animation: fog 5s ease-in-out infinite alternate; transition: opacity .8s; }
+    @keyframes fog { from { transform: translate(-8px,4px) scale(1); } to { transform: translate(12px,-8px) scale(1.18); } }
+    .puff.escape { animation: escape 1.8s ease-out forwards; }
+    @keyframes escape { to { transform: translateY(-260px) scale(2); opacity: 0; } }
+    .eq span { display: inline-block; width: 4px; margin-right: 2px; background: #F0331F; border-radius: 2px; height: 4px; transition: height .1s; }
+    .redact { background: #000; color: transparent; border-radius: 2px; cursor: help; transition: .2s; }
+    .redact:hover { background: rgba(240,51,31,.25); color: #fff; }
+    .page3d { transform-style: preserve-3d; transition: transform .6s cubic-bezier(.7,0,.2,1); }
+    .bars i { display: inline-block; width: 3px; margin: 0 1px; background: currentColor; border-radius: 2px; animation: barz .8s ease-in-out infinite alternate; }
+    @keyframes barz { from { height: 3px; } to { height: 18px; } }
+    .alien { display: inline-grid; place-items: center; border-radius: 9999px; background: radial-gradient(circle at 35% 30%, #b8ff8a, #4caf2a); color: #0d2b05; font-weight: 700; }
+    .alien span { display: inline-block; transform: rotate(90deg); letter-spacing: -.05em; }
+    .scanline { position: absolute; left: 0; right: 0; height: 2px; background: #34d399; box-shadow: 0 0 12px #34d399; transition: top .35s linear; }
+    .flash { animation: flash .5s ease-out forwards; }
+    @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+    .burn { animation: burn 1s ease-in forwards; }
+    @keyframes burn { 40% { filter: sepia(1) saturate(4) hue-rotate(-20deg); } to { opacity: 0; filter: blur(6px); transform: translateY(-10px) scale(.96); } }
+    @media (prefers-reduced-motion: reduce) { .marquee, .blob, .wobble, .spin, .puff { animation: none !important; } }
   </style>
 </head>
 <body class="font-sans text-neutral-200 min-h-screen antialiased">
@@ -59,6 +106,7 @@
       <div class="mt-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
         <p class="max-w-md text-lg text-neutral-400">
           A running list of apps, products, sites and schemes. Some genius, some terrible, some both.
+          <span class="block mt-2 text-sm text-ember">Click any idea to play with a working prototype.</span>
         </p>
         <div id="stats" class="flex flex-wrap gap-3 text-sm"></div>
       </div>
@@ -95,6 +143,7 @@
     // ---- Edit your ideas here ----
     // cat: Apps | Social | Dating | Products | Services | Content | Games
     // nsfw: true hides the idea unless "Show 18+" is ticked
+    // Each idea's interactive prototype lives in the DEMOS section below, keyed by name.
     const ideas = [
       { name: 'Church Givings', emoji: '⛪', cat: 'Services', desc: 'An app that lets churches collect donations online, taking a small percentage of each one. Win over the priests and they promote it for you.' },
       { name: 'Would You Do It for a Dollar?', emoji: '💵', cat: 'Social', desc: 'Like Fiverr, but social. "I dare you to do this for $X." People post dares, others take the money.' },
@@ -157,7 +206,1617 @@
 
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    // =====================================================================
+    //  DEMO KIT
+    // =====================================================================
+    const DEMOS = {};
+    const def = (name, hint, fn) => { DEMOS[name] = { hint, fn }; };
+
+    const B = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-ember text-white text-sm font-semibold hover:bg-red-500 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none';
+    const G = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/15 text-neutral-200 text-sm hover:border-ember/70 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none';
+    const IN = 'bg-white/5 border border-white/15 rounded-full px-4 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-ember';
+    const CARD = 'rounded-2xl bg-white/5 border border-white/10 p-5';
+    const LBL = 'text-xs uppercase tracking-widest text-neutral-500';
+
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+    const fmt2 = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const sel = el => [k => el.querySelector(`[data-${k}]`), k => [...el.querySelectorAll(`[data-${k}]`)]];
+    const phone = (inner, cls = '') => `<div class="phone ${cls}"><div class="phone-screen">${inner}</div></div>`;
+    const typing = (el) => el.tagName && /INPUT|TEXTAREA|SELECT/.test(el.tagName);
+
+    // Every demo gets a ctx whose timers/listeners are torn down when it closes.
+    function makeCtx() {
+      const ivs = [], tos = [], fns = [];
+      return {
+        every(fn, ms) { const i = setInterval(fn, ms); ivs.push(i); return i; },
+        after(fn, ms) { const t = setTimeout(fn, ms); tos.push(t); return t; },
+        on(t, ev, fn, o) { t.addEventListener(ev, fn, o); fns.push(() => t.removeEventListener(ev, fn, o)); },
+        onClean(fn) { fns.push(fn); },
+        raf(fn) { let id; const loop = ts => { fn(ts); id = requestAnimationFrame(loop); }; id = requestAnimationFrame(loop); fns.push(() => cancelAnimationFrame(id)); },
+        dispose() { ivs.forEach(clearInterval); tos.forEach(clearTimeout); fns.forEach(f => { try { f(); } catch (e) {} }); },
+      };
+    }
+
+    // Tiny synth for sound effects
+    let AC;
+    const audio = () => { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); return AC; };
+    function tone(f, dur = .15, type = 'sine', when = 0, vol = .12) {
+      try {
+        const a = audio(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime + when;
+        o.type = type; o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + .05);
+      } catch (e) {}
+    }
+    function sweep(f1, f2, dur, type = 'sawtooth', when = 0, vol = .1) {
+      try {
+        const a = audio(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime + when;
+        o.type = type; o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + .05);
+      } catch (e) {}
+    }
+    const seq = (notes, step = .16, type = 'square', vol = .1) => notes.forEach((n, i) => n && tone(n, step * .9, type, i * step, vol));
+
+    async function useMic(ctx, onLevel) {
+      const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const a = audio(), src = a.createMediaStreamSource(s), an = a.createAnalyser();
+      an.fftSize = 1024; src.connect(an);
+      const d = new Uint8Array(an.fftSize);
+      ctx.onClean(() => { s.getTracks().forEach(t => t.stop()); try { src.disconnect(); } catch (e) {} });
+      ctx.raf(() => { an.getByteTimeDomainData(d); let sum = 0; for (const v of d) { const x = (v - 128) / 128; sum += x * x; } onLevel(Math.min(1, Math.sqrt(sum / d.length) * 6)); });
+    }
+
+    // =====================================================================
+    //  DEMOS (one per idea)
+    // =====================================================================
+
+    def('Church Givings', 'Pick an amount, set your cut, and pass the digital plate.', (el) => {
+      const [q, qa] = sel(el);
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex justify-center">${phone(`
+          <div class="h-full flex flex-col bg-gradient-to-b from-amber-50 to-white">
+            <div class="p-5 pt-12 text-center"><div class="text-5xl">⛪</div><div class="font-bold text-lg mt-1">St. Mary’s Parish</div><div class="text-xs text-neutral-500">Sunday collection · via ChurchGivings</div></div>
+            <div class="px-5"><div class="text-xs text-neutral-500 mb-1">Collected today</div>
+              <div class="h-3 rounded-full bg-neutral-200 overflow-hidden"><div data-bar class="h-full bg-amber-500 transition-all duration-500" style="width:0%"></div></div>
+              <div class="flex justify-between text-xs mt-1"><span data-total>$0</span><span class="text-neutral-500">Goal $500 · new roof</span></div></div>
+            <div class="grid grid-cols-3 gap-2 p-5">${[5, 10, 20, 50, 100, 250].map(a => `<button data-a="${a}" class="py-3 rounded-xl border border-neutral-200 font-semibold transition">$${a}</button>`).join('')}</div>
+            <div class="mt-auto p-5"><button data-give class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 transition text-white font-bold">Give $<span data-sel>20</span> 🙏</button>
+            <div data-amen class="text-center text-sm h-5 mt-2 text-amber-700"></div></div>
+          </div>`)}</div>
+        <div class="space-y-4">
+          <div class="${CARD}"><label class="text-sm text-neutral-400">Platform fee: <b data-feev class="text-white">3</b>%</label><input data-fee type="range" min="0" max="15" value="3" class="w-full accent-red-500 mt-3"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="${CARD}"><div class="${LBL}">Church gets</div><div data-church class="font-display text-4xl text-white mt-1">$0.00</div></div>
+            <div class="${CARD}"><div class="${LBL}">You get</div><div data-you class="font-display text-4xl text-ember mt-1">$0.00</div></div>
+          </div>
+          <div class="${CARD} text-sm text-neutral-400">If <b class="text-white">2,000 parishes</b> each collect $1,500 a week, at this fee you’d make <span data-proj class="text-ember font-semibold"></span> a year. The priest announces you from the pulpit for free.</div>
+        </div></div>`;
+      let amt = 20, total = 0, fee = 3, yours = 0;
+      const upd = () => {
+        q('sel').textContent = amt; q('feev').textContent = fee;
+        q('bar').style.width = Math.min(100, total / 500 * 100) + '%';
+        q('total').textContent = fmt(total);
+        q('church').textContent = fmt2(total - yours); q('you').textContent = fmt2(yours);
+        q('proj').textContent = fmt(2000 * 1500 * 52 * fee / 100);
+        qa('a').forEach(b => { const on = +b.dataset.a === amt; b.classList.toggle('bg-amber-500', on); b.classList.toggle('text-white', on); b.classList.toggle('border-amber-500', on); });
+      };
+      el.onclick = e => { const b = e.target.closest('[data-a]'); if (b) { amt = +b.dataset.a; upd(); } };
+      q('fee').oninput = e => { fee = +e.target.value; upd(); };
+      q('give').onclick = () => {
+        total += amt; yours += amt * fee / 100;
+        q('amen').textContent = total >= 500 ? 'Roof funded. Hallelujah! 🎉' : pick(['Amen! 🙏', 'Bless you!', 'Heaven noted that.', '+1 halo 😇', 'Receipt sent to God.']);
+        seq([523, 659, 784], .1, 'sine', .1); upd();
+      };
+      upd();
+    });
+
+    def('Would You Do It for a Dollar?', 'Raise the stakes on a dare, take one, or post your own.', (el) => {
+      const [q] = sel(el);
+      const dares = [
+        { t: 'Eat a spoonful of mustard on camera', p: 3, n: 4 },
+        { t: 'Text your ex “u up?” and screenshot the reply', p: 12, n: 9 },
+        { t: 'Wear socks with sandals to a wedding', p: 25, n: 17 },
+        { t: 'Sing the national anthem in a supermarket', p: 40, n: 31 },
+      ];
+      let earned = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_320px] gap-6">
+        <div data-list class="space-y-3"></div>
+        <div class="space-y-4">
+          <form data-form class="${CARD} space-y-3">
+            <div class="font-display text-2xl text-white">POST A DARE</div>
+            <input data-t class="${IN} w-full" placeholder="I dare you to…" maxlength="80">
+            <div class="flex gap-2 items-center"><span class="text-neutral-400">$</span><input data-p type="number" min="1" max="999" value="5" class="${IN} w-24"><button class="${B} flex-1">Post</button></div>
+          </form>
+          <div class="${CARD}"><div class="${LBL}">Your earnings</div><div data-earned class="font-display text-5xl text-ember">$0</div><div data-msg class="text-sm text-neutral-400 mt-1">Do something embarrassing. Get paid.</div></div>
+        </div></div>`;
+      const draw = () => { q('list').innerHTML = dares.map((d, i) => `
+        <div class="${CARD} flex flex-wrap sm:flex-nowrap items-center gap-4 transition ${d.done ? 'opacity-40' : ''}">
+          <div class="font-display text-4xl text-ember w-20 shrink-0">$${d.p}</div>
+          <div class="flex-1 min-w-[10rem]"><div class="text-white">${esc(d.t)}</div><div class="text-xs text-neutral-500 mt-1">${d.done ? '✅ Done by you. Paid out.' : `${d.n} ${d.n === 1 ? 'person' : 'people'} chipped in`}</div></div>
+          ${d.done ? '' : `<button data-raise="${i}" class="${G}">+$1</button><button data-take="${i}" class="${B}">I’ll do it</button>`}
+        </div>`).join(''); };
+      draw();
+      el.onclick = e => {
+        const r = e.target.closest('[data-raise]'), t = e.target.closest('[data-take]');
+        if (r) { const d = dares[+r.dataset.raise]; d.p++; d.n++; tone(900, .08, 'triangle'); draw(); }
+        if (t) { const d = dares[+t.dataset.take]; d.done = true; earned += d.p; q('earned').textContent = fmt(earned); q('msg').textContent = pick(['Respect. Dignity −1.', 'Uploaded. Your mom saw it.', 'Legend behaviour.', 'Your therapist will hear about this.']); seq([660, 880, 1320], .09, 'triangle'); draw(); }
+      };
+      q('form').onsubmit = e => { e.preventDefault(); const t = q('t').value.trim(); if (!t) return; dares.unshift({ t, p: clamp(Math.round(+q('p').value || 1), 1, 999), n: 1 }); q('t').value = ''; draw(); };
+    });
+
+    def('You Got a Dollar?', 'Hand over a dollar. Or hold up your own sign.', (el, ctx) => {
+      const [q] = sel(el);
+      const signs = ['Need $1 for coffee ☕', 'Not gonna lie, it’s for snacks', 'Single dad of 0 kids', 'Saving for a yacht. Long way to go.', 'Will not do anything for $1'];
+      let total = 0, givers = 0, si = 0, custom = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div data-stage class="relative ${CARD} text-center py-10 overflow-hidden">
+          <div class="text-7xl mb-4">🧍</div>
+          <div data-sign class="inline-block bg-[#c9a36b] text-[#3a2a12] font-bold px-6 py-4 rounded-sm -rotate-3 shadow-lg max-w-[260px] transition" style="font-family:'Comic Sans MS','Marker Felt',cursive">${signs[0]}</div>
+          <div class="mt-6 flex justify-center gap-3"><button data-give class="${B}">Give $1 🪙</button><button data-five class="${G}">Feeling rich: $5</button></div>
+        </div>
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3"><div class="${CARD}"><div class="${LBL}">Collected</div><div class="font-display text-5xl text-white" data-total>$0</div></div><div class="${CARD}"><div class="${LBL}">Kind strangers</div><div class="font-display text-5xl text-white" data-givers>0</div></div></div>
+          <div class="${CARD}"><div class="text-sm text-neutral-400 mb-2">Progress to $1,000,000</div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div data-bar class="h-full bg-ember transition-all" style="width:.5%"></div></div><div class="text-xs text-neutral-500 mt-2" data-eta>At this rate: never.</div></div>
+          <form data-form class="flex gap-2"><input data-in maxlength="60" class="${IN} flex-1" placeholder="Write your own sign…"><button class="${G}">Hold it up</button></form>
+          <div data-thanks class="text-ember h-5 text-sm"></div>
+        </div></div>`;
+      const give = n => {
+        total += n; givers++;
+        q('total').textContent = fmt(total); q('givers').textContent = givers;
+        q('bar').style.width = Math.max(.5, total / 1e6 * 100) + '%';
+        q('eta').textContent = `Only ${Math.ceil((1e6 - total) / n).toLocaleString('en-US')} more strangers like you.`;
+        q('thanks').textContent = pick(['God bless 🙏', 'You’re a real one', 'Told my mom about you', 'One step closer to the yacht ⛵', 'I’ll name my firstborn after you']);
+        const c = document.createElement('div'); c.textContent = '🪙'; c.className = 'absolute text-3xl float-up pointer-events-none'; c.style.left = rnd(30, 70) + '%'; c.style.top = '40%';
+        q('stage').append(c); setTimeout(() => c.remove(), 1300);
+        tone(1200, .1, 'triangle'); tone(1600, .15, 'triangle', .08);
+      };
+      q('give').onclick = () => give(1); q('five').onclick = () => give(5);
+      ctx.every(() => { if (custom) return; si = (si + 1) % signs.length; q('sign').textContent = signs[si]; }, 3200);
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; custom = true; q('sign').textContent = v; q('sign').classList.add('pop'); q('in').value = ''; };
+    });
+
+    def('Selling Fog', 'Choose a vintage, then dare to open the lid.', (el, ctx) => {
+      const [q, qa] = sel(el);
+      const grades = [
+        { n: 'Morning Mist', p: 19, d: .35, c: 'Harvested at dawn in a Slavonian cornfield.' },
+        { n: 'London Pea-Souper', p: 49, d: .7, c: 'Hand-bottled on the Thames. Smells faintly of 1952.' },
+        { n: 'Silent Hill Reserve', p: 99, d: .97, c: 'Something moves inside. Not our problem.' },
+      ];
+      let g = 1, isOpen = false, cart = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex justify-center py-6"><div class="relative w-48 h-64">
+          <div data-lid class="absolute -top-2 left-1/2 -translate-x-1/2 w-36 h-8 rounded-md bg-gradient-to-b from-neutral-300 to-neutral-600 z-10 transition-transform duration-700 origin-left"></div>
+          <div data-jar class="absolute inset-0 top-5 rounded-[2.2rem] border-4 border-white/30 bg-white/[.04] overflow-hidden">${Array.from({ length: 9 }, (_, i) => `<div class="puff" style="left:${(i % 3) * 30 - 15}%;top:${Math.floor(i / 3) * 30 - 5}%;animation-delay:${-i * .7}s"></div>`).join('')}</div>
+          <div class="absolute left-1/2 -translate-x-1/2 top-28 bg-[#f5ecd7] text-[#3b2a14] text-center px-3 py-2 rounded shadow-lg z-10 w-36"><div class="text-[9px] uppercase tracking-[.25em]">Artisanal</div><div class="font-display text-2xl leading-none">FOG</div><div data-gname class="text-[10px] italic"></div></div>
+        </div></div>
+        <div class="space-y-3">${grades.map((x, i) => `<button data-g="${i}" class="w-full text-left ${CARD} hover:border-ember/60 transition flex justify-between items-center gap-4"><span><b class="text-white">${x.n}</b><span class="block text-sm text-neutral-400">${x.c}</span></span><span class="font-display text-3xl text-ember">$${x.p}</span></button>`).join('')}
+          <div class="flex flex-wrap gap-3 pt-2"><button data-open class="${G}">Open the lid 👀</button><button data-buy class="${B}">Add to cart · <span data-price></span></button></div>
+          <div data-msg class="text-sm text-neutral-400 min-h-[1.25rem]"></div></div></div>`;
+      const draw = () => {
+        qa('g').forEach(b => { const on = +b.dataset.g === g; b.classList.toggle('ring-2', on); b.classList.toggle('ring-ember', on); });
+        if (!isOpen) el.querySelectorAll('.puff').forEach(p => p.style.opacity = grades[g].d);
+        q('gname').textContent = grades[g].n; q('price').textContent = '$' + grades[g].p;
+      };
+      el.onclick = e => { const b = e.target.closest('[data-g]'); if (b) { g = +b.dataset.g; draw(); } };
+      q('open').onclick = () => {
+        isOpen = !isOpen;
+        q('lid').style.transform = isOpen ? 'translate(-30%, -50px) rotate(-25deg)' : '';
+        el.querySelectorAll('.puff').forEach(p => p.classList.toggle('escape', isOpen));
+        q('open').textContent = isOpen ? 'Refill (another $' + grades[g].p + ')' : 'Open the lid 👀';
+        q('msg').textContent = isOpen ? `Congratulations. You released $${grades[g].p} into the atmosphere.` : 'Refilled. Please stop doing that.';
+        if (isOpen) sweep(400, 1600, .9, 'sine', 0, .05);
+        draw();
+      };
+      q('buy').onclick = () => { cart++; q('msg').textContent = `🛒 ${cart} jar${cart > 1 ? 's' : ''} in cart. Shipping is free — the product weighs nothing.`; };
+      draw();
+    });
+
+    def('iEgg', 'Configure your egg. Tap it if you’re brave.', (el) => {
+      const [q, qa] = sel(el);
+      const fin = [{ n: 'Shell White', c: '#f6efe4' }, { n: 'Space Gray', c: '#6b6f76' }, { n: 'Gold', c: '#e6c26e' }, { n: 'Free-Range Brown', c: '#c58b5a' }];
+      const caps = [{ n: 'Egg', p: 99 }, { n: 'Egg Pro (6-pack)', p: 549 }, { n: 'Egg Pro Max (dozen)', p: 1099 }];
+      let f = 0, c = 0, care = false, cracked = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div class="flex flex-col items-center gap-4">
+          <button data-egg class="relative w-44 h-56 shadow-2xl transition-all duration-300" style="border-radius:50% 50% 50% 50% / 60% 60% 40% 40%">
+            <span class="absolute inset-0 grid place-items-center text-4xl" style="filter:grayscale(1) brightness(2.2) contrast(.8)">🍎</span>
+            <span data-crack class="absolute inset-0 grid place-items-center text-7xl opacity-0 transition">⚡</span>
+          </button>
+          <div class="text-xs text-neutral-500">Tap to test durability</div>
+        </div>
+        <div class="space-y-5">
+          <div><div class="text-xs text-ember uppercase tracking-[.3em]">New</div><div class="text-4xl text-white font-semibold">iEgg<span data-capn></span></div><div class="text-neutral-400">The most advanced egg we’ve ever made.</div></div>
+          <div><div class="${LBL} mb-2">Finish — <span data-finn class="text-neutral-300 normal-case tracking-normal"></span></div><div class="flex gap-3">${fin.map((x, i) => `<button data-f="${i}" title="${x.n}" class="w-9 h-9 rounded-full border-2 border-transparent transition" style="background:${x.c}"></button>`).join('')}</div></div>
+          <div><div class="${LBL} mb-2">Capacity</div><div class="grid gap-2">${caps.map((x, i) => `<button data-c="${i}" class="flex justify-between px-4 py-3 rounded-xl border border-white/10 text-sm transition"><span>${x.n}</span><span>$${x.p.toLocaleString('en-US')}</span></button>`).join('')}</div></div>
+          <label class="flex items-center gap-3 text-sm text-neutral-300"><input data-care type="checkbox" class="accent-red-500 w-4 h-4"> EggCare+ (+$29) — covers one accidental crack</label>
+          <div class="flex items-center gap-4"><button data-buy class="${B}">Buy · <span data-total></span></button><span data-msg class="text-sm text-neutral-400"></span></div>
+        </div></div>`;
+      const upd = () => {
+        q('egg').style.background = `radial-gradient(circle at 35% 30%, #fff8 0, ${fin[f].c} 45%, ${fin[f].c})`;
+        q('finn').textContent = fin[f].n; q('capn').textContent = c ? ' ' + caps[c].n.split(' (')[0].replace('Egg ', '') : '';
+        q('total').textContent = '$' + (caps[c].p + (care ? 29 : 0)).toLocaleString('en-US');
+        qa('f').forEach(b => b.classList.toggle('!border-ember', +b.dataset.f === f));
+        qa('c').forEach(b => { const on = +b.dataset.c === c; b.classList.toggle('border-ember', on); b.classList.toggle('bg-ember/10', on); });
+      };
+      el.onclick = e => {
+        const fb = e.target.closest('[data-f]'), cb = e.target.closest('[data-c]');
+        if (fb) { f = +fb.dataset.f; upd(); } if (cb) { c = +cb.dataset.c; upd(); }
+      };
+      q('care').onchange = e => { care = e.target.checked; upd(); };
+      q('egg').onclick = () => {
+        q('egg').classList.remove('shake'); void q('egg').offsetWidth; q('egg').classList.add('shake');
+        if (cracked) return;
+        cracked = true; q('crack').style.opacity = 1; tone(220, .2, 'square');
+        q('msg').textContent = care ? 'Covered by EggCare+. Replacement in 6–8 weeks.' : 'Cracked. That’ll be another $99.';
+        setTimeout(() => { cracked = false; q('crack').style.opacity = 0; }, 1600);
+      };
+      q('buy').onclick = () => { q('msg').textContent = 'Ships in 3–4 weeks. Best before: 2 weeks. Charger sold separately.'; seq([784, 988], .12, 'sine'); };
+      upd();
+    });
+
+    def('Voting', 'Verify, cast your vote, and watch the live count.', (el, ctx) => {
+      const [q, qa] = sel(el);
+      const cands = [{ n: 'Pizza Fridays Party', e: '🍕', v: 41204 }, { n: 'Sir Nap-a-Lot', e: '😴', v: 38911 }, { n: 'Free Wi-Fi Coalition', e: '📶', v: 45023 }];
+      let choice = null, verified = false, voted = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
+        <div class="${CARD} space-y-3">
+          <div class="flex justify-between items-center"><div class="font-display text-2xl text-white">OFFICIAL BALLOT</div><div class="text-xs text-neutral-500">Polls close in <span data-clock>04:59:59</span></div></div>
+          ${cands.map((c, i) => `<button data-cand="${i}" class="w-full flex items-center gap-3 p-4 rounded-xl border border-white/10 hover:border-ember/60 transition text-left"><span class="w-5 h-5 rounded-full border-2 border-white/40 grid place-items-center" data-dot="${i}"></span><span class="text-2xl">${c.e}</span><span class="text-white">${c.n}</span></button>`).join('')}
+          <div class="flex flex-wrap gap-3 pt-2"><button data-verify class="${G}">🪪 Verify with Face ID</button><button data-cast class="${B}" disabled>Cast vote</button></div>
+          <div data-msg class="text-sm text-neutral-400 min-h-[1.25rem]">No queues. No pencils on strings. Vote in your pajamas.</div>
+        </div>
+        <div class="${CARD} space-y-4"><div class="flex justify-between"><div class="font-display text-2xl text-white">LIVE RESULTS</div><div class="flex items-center gap-2 text-xs text-ember"><span class="w-2 h-2 rounded-full bg-ember animate-pulse"></span>LIVE</div></div><div data-res class="space-y-4"></div><div class="text-xs text-neutral-500">Turnout: <span data-turnout></span></div></div>
+      </div>`;
+      const draw = () => {
+        const tot = cands.reduce((s, c) => s + c.v, 0);
+        q('res').innerHTML = cands.map((c, i) => `<div><div class="flex justify-between text-sm mb-1"><span class="text-white">${c.e} ${c.n}${voted && choice === i ? ' <span class="text-ember">· your vote</span>' : ''}</span><span class="text-neutral-400">${(c.v / tot * 100).toFixed(1)}%</span></div><div class="h-3 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-ember transition-all duration-500" style="width:${c.v / tot * 100}%"></div></div></div>`).join('');
+        q('turnout').textContent = tot.toLocaleString('en-US') + ' votes';
+        qa('dot').forEach(d => d.innerHTML = +d.dataset.dot === choice ? '<span class="w-2.5 h-2.5 rounded-full bg-ember"></span>' : '');
+        q('cast').disabled = !(verified && choice !== null) || voted;
+      };
+      el.onclick = e => { const b = e.target.closest('[data-cand]'); if (b && !voted) { choice = +b.dataset.cand; draw(); } };
+      q('verify').onclick = () => {
+        q('verify').textContent = '🔍 Scanning face…'; q('verify').disabled = true;
+        ctx.after(() => { verified = true; q('verify').textContent = '✅ Verified: you are a human'; q('msg').textContent = 'Identity confirmed. One person, one vote.'; draw(); }, 1300);
+      };
+      q('cast').onclick = () => {
+        voted = true; cands[choice].v++;
+        q('msg').innerHTML = `🧾 Receipt <b class="text-white">#${Math.random().toString(16).slice(2, 10).toUpperCase()}</b> · encrypted 🔒 · Want to vote again? Nope. Democracy.`;
+        seq([523, 659, 784, 1046], .1, 'triangle'); draw();
+      };
+      let secs = 5 * 3600 - 1;
+      ctx.every(() => { cands.forEach(c => c.v += Math.floor(rnd(0, 40))); secs--; const h = String(Math.floor(secs / 3600)).padStart(2, '0'), m = String(Math.floor(secs % 3600 / 60)).padStart(2, '0'), s = String(secs % 60).padStart(2, '0'); q('clock').textContent = `${h}:${m}:${s}`; draw(); }, 1000);
+      draw();
+    });
+
+    def('Push-Only Messenger', 'There is no app. Tap a notification to reply inline.', (el, ctx) => {
+      const [q] = sel(el);
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex justify-center">${phone(`<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-fuchsia-600 to-orange-400"></div>
+          <div class="relative text-center text-white pt-14"><div data-clock class="text-6xl font-light tracking-tight"></div><div class="text-sm opacity-80" data-date></div></div>
+          <div data-stack class="absolute inset-x-2 top-48 space-y-2"></div>
+          <div class="absolute bottom-3 inset-x-0 flex justify-center"><div class="w-28 h-1 rounded-full bg-white/70"></div></div>`)}</div>
+        <div class="space-y-4 text-neutral-400"><div class="font-display text-4xl text-white leading-none">NO APP. NO INBOX.<br>JUST NOTIFICATIONS.</div>
+          <p>Every message arrives as a push notification. Tap one to reply right there. Ignore it and it scrolls off forever. That’s the entire product.</p>
+          <div class="flex flex-wrap gap-2"><button data-sim class="${B}">Simulate incoming</button><button data-clear class="${G}">Clear all</button></div></div></div>`;
+      const people = {
+        Mom: { e: '👩', o: ['Did you eat?', 'Call me when you can.', 'I saw your post. We need to talk.'], r: ['Ok. Call me.', 'Why don’t you ever call?', 'Are you wearing a jacket?', 'Who is this? (It’s Mom)'] },
+        Alex: { e: '🧑', o: ['yo you up', 'did you see that video', 'emergency (not really)'], r: ['lmao', 'bet', 'send the meme again', 'we’re so back'] },
+        Luka: { e: '🧔', o: ['Di si?', 'kava?', 'Have you seen my charger'], r: ['brate', 'coffee later?', 'ahahah', 'ok'] },
+      };
+      const tick = () => { const d = new Date(); q('clock').textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); q('date').textContent = d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }); };
+      tick(); ctx.every(tick, 10000);
+      const push = (who, text) => {
+        const stack = q('stack'); if (!stack) return;
+        while (stack.children.length >= 4) stack.lastElementChild.remove();
+        const n = document.createElement('div');
+        n.className = 'notif rounded-2xl bg-white/85 backdrop-blur p-3 text-[13px] shadow-lg cursor-pointer';
+        n.innerHTML = `<div class="flex items-center gap-2 text-[11px] text-neutral-500"><span class="w-4 h-4 rounded bg-green-500 grid place-items-center text-[9px]">💬</span>PUSHCHAT<span class="ml-auto">now</span></div><div class="mt-1 font-semibold">${people[who].e} ${who}</div><div>${esc(text)}</div><form class="mt-2 gap-1" style="display:none"><input class="flex-1 min-w-0 rounded-full bg-white border border-neutral-300 px-3 py-1 text-[13px] focus:outline-none" placeholder="Reply…"><button class="px-3 rounded-full bg-blue-500 text-white text-xs">Send</button></form>`;
+        stack.prepend(n); tone(1320, .08); tone(1760, .1, 'sine', .09);
+        const f = n.querySelector('form'), inp = f.querySelector('input');
+        n.onclick = e => { if (f.contains(e.target)) return; const show = f.style.display === 'none'; f.style.display = show ? 'flex' : 'none'; if (show) inp.focus(); };
+        f.onsubmit = e => { e.preventDefault(); if (!inp.value.trim()) return; n.classList.add('notif-out'); setTimeout(() => n.remove(), 300); ctx.after(() => push(who, pick(people[who].r)), rnd(1200, 2600)); };
+      };
+      ctx.after(() => push('Mom', people.Mom.o[0]), 500);
+      ctx.after(() => push('Alex', people.Alex.o[0]), 2200);
+      q('sim').onclick = () => { const w = pick(Object.keys(people)); push(w, pick(people[w].o)); };
+      q('clear').onclick = () => q('stack').innerHTML = '';
+    });
+
+    def('But First, Let Me Take a Selfie', 'No buttons on screen. Show a gesture (click it, or press 1–5).', (el, ctx) => {
+      const [q] = sel(el);
+      const filters = [['Natural', 'none'], ['Vintage', 'sepia(1)'], ['Noir', 'grayscale(1) contrast(1.2)'], ['Alien', 'hue-rotate(140deg) saturate(2)'], ['Influencer', 'contrast(1.4) saturate(1.8) brightness(1.1)']];
+      const faces = ['😀', '😎', '🤪', '😏', '🥸'];
+      let fi = 0, zoom = 1, front = true, shots = [], busy = false;
+      const gestures = [['✌️', 'Peace', 'Take photo (3s timer)'], ['👍', 'Thumbs up', 'Next filter'], ['🤏', 'Pinch', 'Zoom'], ['👋', 'Wave', 'Flip camera'], ['✊', 'Fist', 'Delete last photo']];
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex justify-center">${phone(`<div data-vf class="absolute inset-0 bg-gradient-to-b from-sky-300 via-rose-200 to-amber-200 transition-[filter] duration-300"><div data-subject class="absolute inset-0 grid place-items-center text-[120px] transition-transform duration-300">😀</div></div>
+          <div class="absolute top-12 inset-x-0 text-center text-[11px] font-semibold text-black/60 tracking-widest uppercase" data-fname>Natural</div>
+          <div data-count class="absolute inset-0 grid place-items-center text-white text-8xl font-bold drop-shadow-lg pointer-events-none"></div>
+          <div data-flash class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
+          <div data-roll class="absolute bottom-6 inset-x-3 flex gap-1.5 justify-center"></div>`)}</div>
+        <div class="space-y-3"><div class="${LBL}">Your hand</div>
+          <div class="grid grid-cols-5 gap-2">${gestures.map((g, i) => `<button data-g="${i}" class="${CARD} !p-3 text-center hover:border-ember/60 transition"><div class="text-4xl">${g[0]}</div><div class="text-[11px] text-neutral-500 mt-1">${i + 1}</div></button>`).join('')}</div>
+          <div class="space-y-1 text-sm">${gestures.map(g => `<div class="flex gap-3 text-neutral-400"><span class="w-6">${g[0]}</span><span class="text-white w-24">${g[1]}</span><span>${g[2]}</span></div>`).join('')}</div>
+          <div data-msg class="text-sm text-ember min-h-[1.25rem]"></div>
+          <p class="text-xs text-neutral-500">In the real app the front camera reads your hand. Here, your mouse is the hand.</p></div></div>`;
+      const vf = () => { q('vf').style.filter = filters[fi][1]; q('fname').textContent = filters[fi][0]; q('subject').style.transform = `scale(${zoom})`; q('subject').textContent = front ? faces[shots.length % faces.length] : '🌆'; };
+      const roll = () => q('roll').innerHTML = shots.slice(-5).map(s => `<div class="pop w-10 h-12 rounded-md border-2 border-white grid place-items-center text-xl bg-gradient-to-b from-sky-300 to-amber-200 overflow-hidden" style="filter:${s.f}"><span style="transform:scale(${s.z})">${s.e}</span></div>`).join('');
+      const act = i => {
+        if (busy) return;
+        if (i === 0) {
+          busy = true; let n = 3; q('count').textContent = n; tone(880, .08);
+          const t = ctx.every(() => { n--; if (n > 0) { q('count').textContent = n; tone(880, .08); } else { clearInterval(t); q('count').textContent = ''; const fl = q('flash'); fl.classList.remove('flash'); void fl.offsetWidth; fl.classList.add('flash'); sweep(3000, 800, .15, 'square', 0, .05); shots.push({ e: q('subject').textContent, f: filters[fi][1], z: zoom }); roll(); vf(); q('msg').textContent = `📸 Saved. ${shots.length} selfie${shots.length > 1 ? 's' : ''}, zero taps.`; busy = false; } }, 700);
+        }
+        if (i === 1) { fi = (fi + 1) % filters.length; q('msg').textContent = `Filter: ${filters[fi][0]}`; }
+        if (i === 2) { zoom = zoom >= 1.6 ? 1 : +(zoom + .3).toFixed(1); q('msg').textContent = `Zoom ${zoom}×`; }
+        if (i === 3) { front = !front; q('msg').textContent = front ? 'Front camera' : 'Rear camera'; }
+        if (i === 4) { shots.pop(); roll(); q('msg').textContent = 'Deleted. Nobody saw that.'; }
+        vf();
+      };
+      el.onclick = e => { const b = e.target.closest('[data-g]'); if (b) act(+b.dataset.g); };
+      ctx.on(window, 'keydown', e => { if (typing(e.target)) return; const k = +e.key; if (k >= 1 && k <= 5) act(k - 1); });
+      vf();
+    });
+
+    def('Don’t Meet in Person', 'Chat freely. Try to suggest meeting up and see what happens.', (el, ctx) => {
+      const [q] = sel(el);
+      const banned = /\b(meet|meeting|coffee|drink|drinks|date|dinner|lunch|address|irl|hang ?out|come over|your place|my place|tonight|where do you live|in person|see you)\b/i;
+      let strikes = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6">
+        <div class="rounded-2xl bg-white/5 border border-white/10 flex flex-col h-[420px]">
+          <div class="flex items-center gap-3 p-4 border-b border-white/10"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 grid place-items-center text-xl">🧑‍🎨</div><div><div class="text-white font-semibold">Sam, 28</div><div class="text-xs text-neutral-500">3 km away · and that’s as close as it gets</div></div><div class="ml-auto text-xs text-neutral-500">Strikes: <b data-strikes class="text-ember">0/3</b></div></div>
+          <div data-log class="flex-1 overflow-y-auto p-4 space-y-2 text-sm"></div>
+          <form data-form class="p-3 border-t border-white/10 flex gap-2"><input data-in class="${IN} flex-1" placeholder="Type a message…" maxlength="140"><button class="${B}">Send</button></form>
+        </div>
+        <div class="space-y-3"><div class="${LBL}">Try saying</div>${['What’s your favourite meme?', 'Wanna grab coffee?', 'Send me a pic of your cat', 'Where do you live?', 'Let’s hang out tonight'].map(s => `<button data-s="${esc(s)}" class="${G} w-full !justify-start">${s}</button>`).join('')}
+          <p class="text-xs text-neutral-500 pt-2">House rules: no meetups, no coffee, no addresses. Love is a Wi-Fi signal.</p></div></div>`;
+      const add = (who, text) => {
+        const d = document.createElement('div');
+        if (who === 'sys') d.className = 'pop mx-auto max-w-[90%] text-center text-xs rounded-xl bg-ember/15 text-ember border border-ember/30 px-3 py-2';
+        else d.className = `pop max-w-[75%] px-3 py-2 rounded-2xl ${who === 'me' ? 'ml-auto bg-ember text-white rounded-br-sm' : 'bg-white/10 text-white rounded-bl-sm'}`;
+        d.textContent = text; q('log').append(d); q('log').scrollTop = 1e6;
+      };
+      add('them', 'hey 👋 love that we’ll never meet');
+      const send = text => {
+        if (strikes >= 3 || !text.trim()) return;
+        if (banned.test(text)) {
+          strikes++; q('strikes').textContent = strikes + '/3'; tone(180, .3, 'sawtooth');
+          add('sys', strikes >= 3 ? '⛔ Account suspended. You tried to meet a human. Please go touch grass (alone).' : `🚫 Message blocked: IRL attempt detected. Strike ${strikes}/3.`);
+          if (strikes >= 3) { q('in').disabled = true; q('in').placeholder = 'Suspended'; }
+          return;
+        }
+        add('me', text);
+        ctx.after(() => add('them', pick(['omg same 😂', 'you’re funny for someone who is only pixels', 'sending you a virtual hug 🫂', 'haha. tell me more (from a safe distance)', 'this is the healthiest relationship I’ve ever had', '🐈 here is my cat, digitally'])), rnd(700, 1500));
+      };
+      q('form').onsubmit = e => { e.preventDefault(); send(q('in').value); q('in').value = ''; };
+      el.onclick = e => { const b = e.target.closest('[data-s]'); if (b) send(b.dataset.s); };
+    });
+
+    def('Stupid People Repellent', 'Click the bottle (or press Space) when they get close. Smart people are immune 🧐', (el, ctx) => {
+      const [q] = sel(el);
+      el.innerHTML = `<div class="space-y-4">
+        <div data-arena class="relative h-64 sm:h-72 rounded-2xl bg-gradient-to-b from-sky-900/50 to-emerald-900/30 border border-white/10 overflow-hidden select-none">
+          <div class="absolute bottom-0 inset-x-0 h-10 bg-emerald-950/70 border-t border-emerald-800/50"></div>
+          <div class="absolute left-3 bottom-10 text-5xl">🧍</div>
+          <button data-bottle class="absolute left-16 bottom-14 text-5xl hover:scale-110 active:scale-90 transition z-10" title="Spray">🧴</button>
+          <div class="absolute left-12 bottom-3 text-[9px] font-bold uppercase bg-white text-ember px-2 rounded z-10">Stupid People Repellent</div>
+          <div data-cloud class="absolute left-24 bottom-10 w-44 h-28 rounded-full bg-white/40 blur-xl opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+        </div>
+        <div class="flex flex-wrap gap-3 items-center"><button data-spray class="${B}">Spray (Space)</button>
+          <div class="text-sm text-neutral-400">Repelled <b data-rep class="text-white">0</b> · Got to you <b data-hit class="text-white">0</b></div>
+          <div data-msg class="text-sm text-ember"></div></div></div>`;
+      const arena = q('arena');
+      let people = [], last = 0, spawn = 0, rep = 0, hit = 0;
+      const spray = () => {
+        const c = q('cloud'); c.style.opacity = 1; setTimeout(() => c.style.opacity = 0, 350);
+        sweep(5000, 2000, .25, 'sawtooth', 0, .03);
+        people.forEach(p => {
+          if (p.x < 320 && !p.flee) {
+            if (p.smart) { p.node.textContent = '🧐💭'; }
+            else { p.flee = true; rep++; q('rep').textContent = rep; }
+          }
+        });
+      };
+      q('bottle').onclick = spray; q('spray').onclick = spray;
+      ctx.on(window, 'keydown', e => { if (e.code === 'Space' && !typing(e.target)) { e.preventDefault(); e.stopPropagation(); spray(); } }, true);
+      ctx.raf(ts => {
+        const dt = Math.min(.05, (ts - (last || ts)) / 1000); last = ts;
+        const W = arena.clientWidth;
+        spawn -= dt;
+        if (spawn <= 0) {
+          spawn = rnd(.9, 1.8);
+          const smart = Math.random() < .22, n = document.createElement('div');
+          n.className = 'absolute text-4xl'; n.style.bottom = rnd(8, 34) + 'px'; n.style.left = '0';
+          n.textContent = smart ? '🧐' : pick(['🤪', '🥴', '🤡', '🫠', '😜', '🙃']);
+          arena.append(n); people.push({ x: W, v: rnd(45, 95), smart, flee: false, node: n });
+        }
+        people.forEach(p => {
+          p.x += (p.flee ? 2.6 : -1) * p.v * dt;
+          p.node.style.transform = `translateX(${p.x}px) ${p.flee ? 'rotate(15deg)' : ''}`;
+          if (!p.flee && !p.smart && p.x < 70) {
+            hit++; q('hit').textContent = hit; p.dead = true;
+            q('msg').textContent = pick(['Ugh, a flat-earther got you.', 'Someone just explained crypto to you.', 'You got cornered by a guy who “does his own research”.']);
+            tone(140, .25, 'square');
+          }
+          if (p.x > W + 60 || p.x < -60) p.dead = true;
+        });
+        people = people.filter(p => { if (p.dead) p.node.remove(); return !p.dead; });
+      });
+    });
+
+    def('Alien Emoji', 'Type normal emoticons — they get an extra pair of eyes. Tap a key to add one.', (el) => {
+      const [q] = sel(el);
+      const set = ['::)', '::D', '::P', '::(', '::O', '::|', '::*', ';;)', '::3', '::/'];
+      const alienize = s => s.replace(/(^|[^:;])([:;])(-?)([)DPp(Oo|*3\/])/g, '$1$2$2$4');
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
+        <div class="space-y-3">
+          <textarea data-in rows="3" class="w-full rounded-2xl bg-white/5 border border-white/15 p-4 text-white focus:outline-none focus:border-ember" placeholder="Type something with :) or :D or ;)">hey :) did you see that :D lol :P</textarea>
+          <div class="${LBL}">Alien keyboard</div>
+          <div class="grid grid-cols-5 gap-2">${set.map(s => `<button data-k="${s}" class="${CARD} !p-2 flex flex-col items-center gap-1 hover:border-ember/60"><span class="alien w-10 h-10 text-sm"><span>${s}</span></span><span class="text-[11px] text-neutral-500 font-mono">${s}</span></button>`).join('')}</div>
+        </div>
+        <div class="space-y-3">
+          <div class="${LBL}">Translated for extraterrestrials</div>
+          <div class="rounded-2xl bg-ember text-white px-5 py-4 text-lg font-mono break-words" data-out></div>
+          <div class="${LBL} pt-2">How it looks, tilted</div>
+          <div data-faces class="flex flex-wrap gap-2 min-h-[3rem]"></div>
+          <button data-copy class="${G}">Copy alien text</button><span data-msg class="text-sm text-neutral-400 ml-2"></span>
+        </div></div>`;
+      const upd = () => {
+        const out = alienize(q('in').value); q('out').textContent = out || '…';
+        const found = out.match(/([:;])\1[)DPp(Oo|*3\/]/g) || [];
+        q('faces').innerHTML = found.map(f => `<span class="alien w-14 h-14 text-lg pop"><span>${esc(f)}</span></span>`).join('') || '<span class="text-neutral-500 text-sm">No faces yet.</span>';
+      };
+      q('in').oninput = upd;
+      el.onclick = e => { const k = e.target.closest('[data-k]'); if (k) { q('in').value += ' ' + k.dataset.k; upd(); tone(1100, .05, 'triangle'); } };
+      q('copy').onclick = () => { navigator.clipboard?.writeText(q('out').textContent).then(() => q('msg').textContent = 'Copied ::D', () => q('msg').textContent = 'Copy blocked ::('); };
+      upd();
+    });
+
+    def('Clout Farm', 'Post anything. Watch 100% organic* engagement roll in.', (el, ctx) => {
+      const [q] = sel(el);
+      let followers = 12;
+      el.innerHTML = `<div class="grid lg:grid-cols-[340px_1fr] gap-6">
+        <div class="space-y-4">
+          <div class="${CARD} flex items-center gap-4"><div class="w-14 h-14 rounded-full bg-gradient-to-br from-ember to-amber-400 grid place-items-center text-2xl">😎</div><div><div class="text-white font-semibold">@you</div><div class="text-sm text-neutral-400"><b data-fol class="text-white">12</b> followers <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 ml-1">✔ verified</span></div></div></div>
+          <form data-form class="${CARD} space-y-3"><textarea data-in rows="3" maxlength="200" class="w-full bg-transparent text-white placeholder-neutral-500 focus:outline-none resize-none" placeholder="What’s on your mind?">Just had a sandwich.</textarea><div class="flex justify-between items-center"><span class="text-xs text-neutral-500">*0% organic</span><button class="${B}">Post</button></div></form>
+        </div>
+        <div data-feed class="space-y-4"><div class="text-neutral-500 text-sm">Your feed is empty. Post something and become famous instantly.</div></div></div>`;
+      const handles = ['@real_human_4821', '@totally_not_a_bot', '@crypto_jessica', '@motivation_daily', '@your_biggest_fan', '@elon_fan_account_77', '@grandma_ai'];
+      const comments = ['This changed my life 🔥', 'Bro is the next Elon', 'Underrated take.', 'Sending this to my mom ❤️', 'I’m literally crying', 'Who else is here in 2026?', 'Genius. Pure genius.', 'Frame this. Put it in the Louvre.', 'First!!'];
+      q('form').onsubmit = e => {
+        e.preventDefault(); const text = q('in').value.trim(); if (!text) return; q('in').value = '';
+        const feed = q('feed'); if (!feed.querySelector('article')) feed.innerHTML = '';
+        const a = document.createElement('article'); a.className = `${CARD} pop`;
+        a.innerHTML = `<div class="text-white text-lg">${esc(text)}</div><div class="flex gap-6 mt-3 text-sm text-neutral-400"><span>❤️ <b class="text-white" data-l>0</b></span><span>💬 <b class="text-white" data-c>0</b></span><span>🔁 <b class="text-white" data-s>0</b></span><span class="ml-auto text-xs text-emerald-400">📈 viral</span></div><div class="mt-3 space-y-1.5 text-sm" data-cm></div>`;
+        feed.prepend(a); while (feed.children.length > 3) feed.lastElementChild.remove();
+        let likes = 0, shares = 0, n = 0;
+        const t = ctx.every(() => {
+          n++; likes += Math.floor(likes * .35 + rnd(5, 30)); shares += Math.floor(rnd(0, 12) + n);
+          followers += Math.floor(rnd(50, 400) * n);
+          a.querySelector('[data-l]').textContent = likes.toLocaleString('en-US'); a.querySelector('[data-s]').textContent = shares.toLocaleString('en-US');
+          q('fol').textContent = followers.toLocaleString('en-US');
+          if (n % 2 === 0) { const c = document.createElement('div'); c.className = 'pop text-neutral-300'; c.innerHTML = `<b class="text-sky-300">${pick(handles)}</b> ${pick(comments)}`; a.querySelector('[data-cm]').append(c); a.querySelector('[data-c]').textContent = n / 2; }
+          if (n > 12) clearInterval(t);
+        }, 450);
+      };
+    });
+
+    def('Hangover', 'It’s 2 AM. Then flip to the morning after.', (el) => {
+      const [q] = sel(el);
+      const photos = [
+        { e: '🕺🍾', c: '2:14 AM — “I can totally dance”', g: 'from-fuchsia-600 to-indigo-800' },
+        { e: '🥙🛏️', c: '3:02 AM — kebab in bed', g: 'from-amber-500 to-red-700' },
+        { e: '🤳🚕', c: '3:40 AM — selfie with the taxi driver', g: 'from-yellow-400 to-orange-700' },
+        { e: '🎤😭', c: '1:30 AM — Celine Dion, crying', g: 'from-sky-500 to-violet-800' },
+        { e: '🐈‍⬛🧥', c: '4:10 AM — adopted a cat??', g: 'from-emerald-500 to-teal-800' },
+        { e: '📱💔', c: '4:45 AM — texted the ex', g: 'from-rose-500 to-pink-900' },
+      ];
+      let morning = false, regret = 0;
+      el.innerHTML = `<div class="space-y-5">
+        <div class="flex flex-wrap items-center gap-3"><div class="inline-flex rounded-full bg-white/5 border border-white/10 p-1"><button data-night class="px-4 py-1.5 rounded-full text-sm">🌙 2:37 AM</button><button data-morn class="px-4 py-1.5 rounded-full text-sm">☀️ 11:48 AM</button></div>
+          <button data-up class="${B}">📸 Upload drunk photo</button><span data-msg class="text-sm text-neutral-400"></span></div>
+        <div data-grid class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div></div>`;
+      const draw = () => {
+        regret = photos.reduce((s, p) => s + (p.r || 0), 0);
+        q('night').className = `px-4 py-1.5 rounded-full text-sm ${!morning ? 'bg-ember text-white' : 'text-neutral-400'}`;
+        q('morn').className = `px-4 py-1.5 rounded-full text-sm ${morning ? 'bg-ember text-white' : 'text-neutral-400'}`;
+        q('up').disabled = morning;
+        q('msg').textContent = morning ? `Regret score: ${regret}/${photos.length * 3} 🤕` : 'Uploads only allowed after midnight.';
+        q('grid').innerHTML = photos.map((p, i) => `<div class="rounded-xl overflow-hidden border border-white/10 bg-white/5 ${morning ? '' : 'wobble'}" style="animation-delay:${-i * .4}s">
+          <div class="aspect-square bg-gradient-to-br ${p.g} grid place-items-center text-6xl transition duration-700" style="filter:${morning ? 'none' : 'blur(3px) saturate(1.8)'}">${p.e}</div>
+          <div class="p-3 text-xs text-neutral-300">${p.c}</div>
+          ${morning ? `<div class="px-3 pb-3 flex gap-1">${['😬', '😱', '💀'].map((r, k) => `<button data-r="${i}:${k + 1}" class="flex-1 rounded-lg py-1 ${p.r === k + 1 ? 'bg-ember' : 'bg-white/10 hover:bg-white/20'}">${r}</button>`).join('')}<button data-del="${i}" class="rounded-lg px-2 bg-white/10 hover:bg-white/20" title="Delete forever">🗑️</button></div>` : ''}
+        </div>`).join('');
+      };
+      q('night').onclick = () => { morning = false; draw(); };
+      q('morn').onclick = () => { morning = true; draw(); };
+      q('up').onclick = () => { photos.unshift({ e: pick(['🍕🚽', '🛒😴', '🦆🍺', '🍟🌧️', '🎳🩲']), c: `${Math.floor(rnd(1, 5))}:${String(Math.floor(rnd(10, 59)))} AM — no idea`, g: pick(['from-lime-500 to-green-900', 'from-orange-500 to-red-900', 'from-indigo-400 to-purple-900']) }); draw(); };
+      el.onclick = e => {
+        const r = e.target.closest('[data-r]'), d = e.target.closest('[data-del]');
+        if (r) { const [i, v] = r.dataset.r.split(':').map(Number); photos[i].r = v; draw(); }
+        if (d) { photos.splice(+d.dataset.del, 1); draw(); }
+      };
+      draw();
+    });
+
+    def('RentACock', 'Pick a tier, request a ride… er, companion. Watch them arrive.', (el, ctx) => {
+      const [q, qa] = sel(el);
+      const tiers = [{ n: 'Standard', p: 80, e: '🚗' }, { n: 'Comfort', p: 140, e: '🚙' }, { n: 'XL 😏', p: 260, e: '🚐' }];
+      const names = ['Rico', 'Dante', 'Marco', 'Leo', 'Viktor'];
+      let tier = 0, state = 'idle', cars = names.map(n => ({ n, x: rnd(8, 92), y: rnd(10, 90), r: (4.6 + Math.random() * .4).toFixed(1) }));
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_320px] gap-6">
+        <div data-map class="relative h-80 rounded-2xl overflow-hidden border border-white/10" style="background:#1d1d24;background-image:linear-gradient(#2a2a33 2px,transparent 2px),linear-gradient(90deg,#2a2a33 2px,transparent 2px);background-size:48px 48px">
+          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full text-3xl z-10">📍</div>
+          <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-ember/20 animate-ping"></div>
+          <div data-cars></div>
+        </div>
+        <div class="space-y-3">
+          ${tiers.map((t, i) => `<button data-t="${i}" class="w-full flex items-center gap-3 p-3 rounded-xl border border-white/10 transition text-left"><span class="text-3xl">${t.e}</span><span class="flex-1 text-white">${t.n}<span class="block text-xs text-neutral-500">Discreet · arrives in ~4 min</span></span><span class="font-semibold text-white">$${t.p}/h</span></button>`).join('')}
+          <button data-req class="${B} w-full">Request</button>
+          <div data-status class="${CARD} text-sm text-neutral-300 min-h-[4rem]">Choose a tier. All companions are verified adults who set their own rules.</div>
+        </div></div>`;
+      const draw = () => {
+        q('cars').innerHTML = cars.map(c => `<div class="absolute text-2xl transition-all duration-1000 ease-linear" style="left:${c.x}%;top:${c.y}%;transform:translate(-50%,-50%)">${tiers[tier].e}${c.on ? `<span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] bg-white text-black px-1.5 rounded whitespace-nowrap">${c.n} ★${c.r}</span>` : ''}</div>`).join('');
+        qa('t').forEach(b => { const on = +b.dataset.t === tier; b.classList.toggle('border-ember', on); b.classList.toggle('bg-ember/10', on); });
+      };
+      ctx.every(() => {
+        cars.forEach(c => {
+          if (c.on) { c.x += (50 - c.x) * .25; c.y += (50 - c.y) * .25; }
+          else { c.x = clamp(c.x + rnd(-6, 6), 5, 95); c.y = clamp(c.y + rnd(-6, 6), 8, 92); }
+        });
+        draw();
+      }, 1000);
+      el.onclick = e => { const b = e.target.closest('[data-t]'); if (b && state === 'idle') { tier = +b.dataset.t; draw(); } };
+      q('req').onclick = () => {
+        if (state !== 'idle') { state = 'idle'; cars.forEach(c => c.on = false); q('req').textContent = 'Request'; q('status').textContent = 'Cancelled. No hard feelings.'; return; }
+        state = 'match'; q('req').textContent = 'Cancel'; q('status').textContent = 'Matching you with a nearby companion…';
+        ctx.after(() => {
+          if (state !== 'match') return;
+          const c = cars.reduce((a, b) => Math.hypot(a.x - 50, a.y - 50) < Math.hypot(b.x - 50, b.y - 50) ? a : b); c.on = true; state = 'coming';
+          let eta = 4;
+          q('status').innerHTML = `<b class="text-white">${c.n}</b> ★${c.r} accepted. Arriving in <b data-eta class="text-ember">${eta} min</b>.`;
+          const t = ctx.every(() => {
+            if (state !== 'coming') return clearInterval(t);
+            eta--; const s = q('eta'); if (s) s.textContent = eta + ' min';
+            if (eta <= 0) { clearInterval(t); state = 'arrived'; q('status').innerHTML = `${c.n} has arrived. Be discreet 🤫<div class="mt-2 text-2xl">${[1, 2, 3, 4, 5].map(i => `<button data-star="${i}" class="hover:scale-125 transition">☆</button>`).join('')}</div>`; tone(880, .1); tone(1175, .15, 'sine', .1); }
+          }, 1200);
+          draw();
+        }, 1200);
+      };
+      el.addEventListener('click', e => {
+        const s = e.target.closest('[data-star]'); if (!s) return;
+        const n = +s.dataset.star; q('status').innerHTML = `Rated ${'★'.repeat(n)}${'☆'.repeat(5 - n)}. Receipt labelled “Consulting services”.`;
+        cars.forEach(c => c.on = false); state = 'idle'; q('req').textContent = 'Request'; draw();
+      });
+      draw();
+    });
+
+    def('Face First', 'Try uploading a profile photo. Only one kind is allowed.', (el) => {
+      const [q] = sel(el);
+      const tries = [['💪', 'Torso', 'That’s a torso. We need a face.'], ['🌅', 'Sunset', 'Beautiful sunset. Is it you? No. Face, please.'], ['⬛', 'Black square', 'The void is not a face.'], ['🐶', 'Dog', 'Cute dog. Still not your face.'], ['🏋️', 'Gym mirror', 'Your phone is covering your face. Classic.'], ['😀', 'Face', null]];
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
+        <div class="${CARD}"><div class="${LBL} mb-3">Other apps</div><div class="grid grid-cols-4 gap-2">${['💪', '⬛', '🌅', '🍑', '🏋️', '⬛', '👕', '🚗'].map(e => `<div class="aspect-square rounded-lg bg-white/5 grid place-items-center text-3xl relative">${e}<span class="absolute bottom-1 left-1 text-[9px] text-neutral-500">“hey”</span></div>`).join('')}</div><div class="text-xs text-neutral-500 mt-3">8 profiles. 0 faces. 100% mystery.</div></div>
+        <div class="${CARD} space-y-4"><div class="flex items-center gap-4"><div data-avatar class="w-20 h-20 rounded-full bg-white/10 grid place-items-center text-4xl border-2 border-dashed border-white/20">?</div><div><div class="text-white font-semibold text-lg">Add your profile photo</div><div class="text-sm text-neutral-400">Face required. No exceptions. No torsos.</div></div></div>
+          <div class="grid grid-cols-3 gap-2">${tries.map((t, i) => `<button data-try="${i}" class="${G} !rounded-xl flex-col !py-3"><span class="text-2xl">${t[0]}</span><span class="text-xs">${t[1]}</span></button>`).join('')}</div>
+          <div data-msg class="text-sm min-h-[1.25rem]"></div><div data-grid></div></div></div>`;
+      el.onclick = e => {
+        const b = e.target.closest('[data-try]'); if (!b) return; const t = tries[+b.dataset.try], av = q('avatar');
+        av.textContent = t[0];
+        if (t[2]) { av.classList.remove('shake'); void av.offsetWidth; av.classList.add('shake'); av.style.borderColor = '#F0331F'; q('msg').className = 'text-sm text-ember'; q('msg').textContent = '❌ ' + t[2]; q('grid').innerHTML = ''; tone(200, .2, 'square'); return; }
+        av.style.borderColor = '#34d399'; av.style.borderStyle = 'solid';
+        q('msg').className = 'text-sm text-emerald-400'; q('msg').textContent = '✅ Face detected. Welcome in. Everyone here has one. Revolutionary.';
+        q('grid').innerHTML = `<div class="grid grid-cols-4 gap-2">${['🧔', '👨‍🦱', '👱‍♂️', '🧑‍🦰', '👨🏽‍🦲', '🧑🏿', '👨‍🦳', '🧑🏻'].map((f, i) => `<div class="pop aspect-square rounded-lg bg-gradient-to-br from-pink-500/30 to-violet-500/30 grid place-items-center text-3xl relative" style="animation-delay:${i * 60}ms">${f}<span class="absolute bottom-1 left-1 text-[9px] text-emerald-300">● ${Math.floor(rnd(1, 9))}km</span></div>`).join('')}</div>`;
+        seq([523, 784], .12, 'triangle');
+      };
+    });
+
+    def('Hate Comment Removal', 'Hit Scan & Clean and watch the haters vanish.', (el, ctx) => {
+      const [q] = sel(el);
+      const nice = ['Love this so much ❤️', 'You always make my day', 'Where is this place? Stunning', 'Haha the dog at 0:14 😂', 'Saving this for later!', 'Your editing keeps getting better'];
+      const hate = ['nobody asked', 'worst content ever, unfollowing', 'you look like a potato lol', 'cringe. delete your account', 'mid. as always', 'ratio + L + you fell off'];
+      let list = [], removed = 0, scanning = false;
+      const fill = () => { for (let i = 0; i < 8; i++) { const h = Math.random() < .45; list.push({ t: h ? pick(hate) : pick(nice), h, u: '@' + pick(['dave', 'kiki', 'marko', 'xx_dark', 'ana', 'troll99', 'beep', 'lena']) + Math.floor(rnd(1, 99)), p: pick(['IG', 'TT', 'YT']) }); } };
+      fill();
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6">
+        <div data-box class="relative rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2 overflow-hidden min-h-[360px]"><div data-scan class="scanline hidden"></div><div data-list class="space-y-2"></div></div>
+        <div class="space-y-3">
+          <div class="flex gap-2">${['📸 IG', '🎵 TikTok', '▶️ YouTube'].map(p => `<span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${p} ✓</span>`).join('')}</div>
+          <button data-scanbtn class="${B} w-full">🧹 Scan & Clean</button><button data-more class="${G} w-full">Load more comments</button>
+          <div class="grid grid-cols-2 gap-3"><div class="${CARD}"><div class="${LBL}">Removed</div><div data-rem class="font-display text-4xl text-white">0</div></div><div class="${CARD}"><div class="${LBL}">Your mood</div><div data-mood class="text-4xl">😐</div></div></div>
+        </div></div>`;
+      const icons = { IG: '📸', TT: '🎵', YT: '▶️' };
+      const draw = () => q('list').innerHTML = list.map((c, i) => `<div data-i="${i}" class="flex gap-3 items-start p-3 rounded-xl bg-white/[.03] transition-all duration-500"><span>${icons[c.p]}</span><div><span class="text-sky-300 text-sm">${c.u}</span><div class="text-white text-sm">${esc(c.t)}</div></div></div>`).join('');
+      draw();
+      q('scanbtn').onclick = () => {
+        if (scanning) return; scanning = true;
+        const rows = [...q('list').children], sl = q('scan'); sl.classList.remove('hidden');
+        rows.forEach((r, k) => ctx.after(() => {
+          sl.style.top = (r.offsetTop + r.offsetHeight / 2) + 'px';
+          const c = list[+r.dataset.i];
+          if (c.h) { r.style.background = 'rgba(240,51,31,.25)'; r.style.textDecoration = 'line-through'; tone(300, .08, 'square'); ctx.after(() => { r.style.opacity = 0; r.style.transform = 'translateX(60px)'; }, 250); }
+          else { r.style.background = 'rgba(52,211,153,.08)'; }
+          if (k === rows.length - 1) ctx.after(() => {
+            const before = list.length; list = list.filter(c => !c.h); removed += before - list.length;
+            q('rem').textContent = removed; q('mood').textContent = removed > 8 ? '🥰' : removed ? '🙂' : '😐';
+            sl.classList.add('hidden'); scanning = false; draw(); seq([659, 880], .1, 'triangle');
+          }, 700);
+        }, k * 300));
+      };
+      q('more').onclick = () => { if (!scanning) { fill(); draw(); q('mood').textContent = '😬'; } };
+    });
+
+    def('OnlyHaters', 'Subscribe to unlock premium hate. Or order a custom roast.', (el) => {
+      const [q] = sel(el);
+      const posts = ['Your favourite band is mid.', 'Pineapple on pizza people should be studied.', 'People who clap when the plane lands: why.', 'Your “quick question” has never once been quick.', 'Gym selfies are a cry for help and I am not answering.'];
+      let subbed = false;
+      const roasts = [x => `${x}? Even my microwave has better taste.`, x => `I’ve seen more personality in ${x} than in… wait, no I haven’t.`, x => `${x} is what people bring up when the conversation is already dead.`, x => `${x} is the human equivalent of a reply-all.`, x => `Scientists studied ${x} and asked for their funding back.`];
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_320px] gap-6">
+        <div class="space-y-4">
+          <div class="rounded-2xl overflow-hidden border border-white/10"><div class="h-24 bg-gradient-to-r from-zinc-800 via-red-900 to-zinc-900"></div><div class="p-5 bg-white/5 flex flex-wrap items-end gap-4 -mt-10"><div class="w-20 h-20 rounded-full bg-zinc-900 border-4 border-[#2a0d0a] grid place-items-center text-4xl">😤</div><div class="flex-1"><div class="text-white font-semibold text-lg">@grumpy_gary</div><div class="text-sm text-neutral-400">Professional hater · <span data-subs>12,408</span> subscribers</div></div><button data-sub class="${B}">Subscribe · $4.99/mo</button></div></div>
+          <div data-posts class="space-y-3"></div>
+        </div>
+        <form data-form class="${CARD} space-y-3 self-start"><div class="font-display text-2xl text-white">CUSTOM ROAST</div><input data-in maxlength="40" class="${IN} w-full" placeholder="Something to hate (e.g. Crocs)"><button class="${B} w-full">Order hate · $2</button><div data-roast class="text-white text-lg italic min-h-[3rem]"></div></form></div>`;
+      const draw = () => q('posts').innerHTML = posts.map((p, i) => `<div class="${CARD} relative overflow-hidden"><div class="text-white ${i && !subbed ? 'blur-md select-none' : ''}">${p}</div>${i && !subbed ? '<div class="absolute inset-0 grid place-items-center text-sm text-neutral-300">🔒 Subscribe to see this hate</div>' : ''}<div class="text-xs text-neutral-500 mt-2">💢 ${Math.floor(200 + i * 137)} angry reactions</div></div>`).join('');
+      q('sub').onclick = () => { subbed = !subbed; q('sub').textContent = subbed ? 'Subscribed 😤' : 'Subscribe · $4.99/mo'; q('subs').textContent = (12408 + (subbed ? 1 : 0)).toLocaleString('en-US'); draw(); if (subbed) sweep(200, 90, .4, 'sawtooth', 0, .08); };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; q('roast').textContent = '“' + pick(roasts)(v) + '”'; q('roast').classList.remove('pop'); void q('roast').offsetWidth; q('roast').classList.add('pop'); };
+      draw();
+    });
+
+    def('News Excerpt Summary', 'Choose how short you want the news. Then try to read “the full article”.', (el) => {
+      const [q] = sel(el);
+      const stories = [
+        ['City approves 40 km of new bike lanes', 'The city council approved 40 km of new bike lanes on Tuesday. Construction starts in spring. Drivers are already furious.', 'More bike lanes are coming and drivers are mad.', '🚲 ➕ 😡'],
+        ['Study: coffee helps, then hurts', 'A new study found two cups of coffee a day improves focus. Five cups does the opposite. Researchers were on cup four when they wrote it.', 'Some coffee is good, a lot is bad.', '☕ ✅ ☕☕☕☕☕ ❌'],
+        ['Local bakery wins national croissant prize', 'A family bakery won first prize in the national croissant championship. The queue is now two blocks long. The owner says “please stop coming.”', 'Bakery won, now it’s too busy.', '🥐 🏆 🧍🧍🧍🧍'],
+        ['Heatwave expected this weekend', 'Temperatures will reach 38°C on Saturday. Authorities advise staying indoors. Everyone will go to the beach anyway.', 'It’ll be very hot this weekend.', '🌡️ 🔥 🏖️'],
+        ['Tech company announces yet another AI', 'A major tech company unveiled a new AI assistant on Monday. It can write emails, summarise meetings and apologise. Nobody asked.', 'Another AI launched.', '🤖 🆕 🥱'],
+        ['Tram strike ends after three days', 'Tram drivers ended their strike after reaching a pay deal. Services resume Thursday morning. Commuters forgot how trams work.', 'Trams are back Thursday.', '🚋 ✅'],
+      ];
+      let lvl = 0;
+      el.innerHTML = `<div class="space-y-5">
+        <div class="flex flex-wrap items-center gap-3"><span class="${LBL}">Length</span><div class="inline-flex rounded-full bg-white/5 border border-white/10 p-1">${['2–3 sentences', '1 sentence', 'Emoji only'].map((l, i) => `<button data-l="${i}" class="px-4 py-1.5 rounded-full text-sm">${l}</button>`).join('')}</div><span class="text-sm text-neutral-400 ml-auto">⏱️ Time saved today: <b data-saved class="text-white"></b></span></div>
+        <div data-list class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div><div data-msg class="text-sm text-ember min-h-[1.25rem]"></div></div>`;
+      const draw = () => {
+        el.querySelectorAll('[data-l]').forEach(b => b.className = `px-4 py-1.5 rounded-full text-sm ${+b.dataset.l === lvl ? 'bg-ember text-white' : 'text-neutral-400'}`);
+        q('list').innerHTML = stories.map(s => `<article class="${CARD} flex flex-col"><div class="text-white font-semibold">${s[0]}</div><p class="text-neutral-300 mt-2 flex-1 ${lvl === 2 ? 'text-3xl' : ''}">${s[lvl + 1]}</p><button data-full class="text-xs text-ember mt-3 text-left hover:underline">Read full article →</button></article>`).join('');
+        q('saved').textContent = [24, 31, 35][lvl] + ' min';
+      };
+      el.onclick = e => {
+        const b = e.target.closest('[data-l]'); if (b) { lvl = +b.dataset.l; draw(); }
+        if (e.target.closest('[data-full]')) q('msg').textContent = pick(['There is no full article. That was it.', 'You just read it. Congratulations.', 'Full article: see above.']);
+      };
+      draw();
+    });
+
+    def('Bluetooth Chat', 'Only people within 10 m show up. They move around — keep them close.', (el, ctx) => {
+      const [q] = sel(el);
+      const ppl = [['Ana', '👩‍🦰'], ['Tom', '🧑‍💻'], ['Iva', '👩‍🎤'], ['Ben', '🧔'], ['Mia', '👧'], ['Leo', '🧑‍🍳']].map(([n, e]) => ({ n, e, d: rnd(3, 35), a: rnd(0, Math.PI * 2) }));
+      let chat = null;
+      el.innerHTML = `<div class="grid lg:grid-cols-[300px_1fr] gap-6 items-start">
+        <div class="flex flex-col items-center gap-3"><svg viewBox="0 0 300 300" class="w-full max-w-[300px]"><circle cx="150" cy="150" r="148" fill="#0d2a1c" stroke="#1f5c3c"/>${[1, 2, 3].map(i => `<circle cx="150" cy="150" r="${i * 45}" fill="none" stroke="#1f5c3c" stroke-dasharray="3 4"/>`).join('')}<circle cx="150" cy="150" r="${10 / 45 * 148}" fill="rgba(52,211,153,.15)" stroke="#34d399"/><g data-dots></g><text x="150" y="155" text-anchor="middle" font-size="16">🫵</text></svg>
+          <div class="text-xs text-neutral-500">Green ring = Bluetooth range (10 m)</div><button data-walk class="${G}">🚶 Walk around</button></div>
+        <div class="space-y-3"><div class="${LBL}">Nearby</div><div data-near class="flex flex-wrap gap-2"></div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 flex flex-col h-64"><div data-head class="p-3 border-b border-white/10 text-sm text-neutral-400">Tap someone nearby to chat</div><div data-log class="flex-1 overflow-y-auto p-3 space-y-2 text-sm"></div><form data-form class="p-2 border-t border-white/10 flex gap-2"><input data-in class="${IN} flex-1" placeholder="Say hi to a stranger…" disabled><button class="${B}">Send</button></form></div></div></div>`;
+      const add = (cls, t) => { const d = document.createElement('div'); d.className = cls; d.textContent = t; q('log').append(d); q('log').scrollTop = 1e6; };
+      const draw = () => {
+        q('dots').innerHTML = ppl.map(p => { const r = Math.min(140, p.d / 45 * 148), x = 150 + Math.cos(p.a) * r, y = 150 + Math.sin(p.a) * r; return `<g style="transition:transform 1s" transform="translate(${x},${y})"><text text-anchor="middle" y="6" font-size="18" opacity="${p.d <= 10 ? 1 : .35}">${p.e}</text><text text-anchor="middle" y="22" font-size="9" fill="#9ca3af">${p.d.toFixed(0)}m</text></g>`; }).join('');
+        const near = ppl.filter(p => p.d <= 10);
+        q('near').innerHTML = near.length ? near.map(p => `<button data-p="${p.n}" class="${G} ${chat === p ? '!border-ember' : ''}">${p.e} ${p.n} · ${p.d.toFixed(0)}m</button>`).join('') : '<span class="text-sm text-neutral-500">Nobody in range. Go outside. Or walk around.</span>';
+        if (chat && chat.d > 10) { add('text-center text-xs text-ember', `📶 Connection lost — ${chat.n} wandered off (${chat.d.toFixed(0)} m)`); chat = null; q('in').disabled = true; q('head').textContent = 'Tap someone nearby to chat'; tone(220, .3, 'sine'); }
+      };
+      ctx.every(() => { ppl.forEach(p => { p.d = clamp(p.d + rnd(-2.5, 2.5), 1, 44); p.a += rnd(-.2, .2); }); draw(); }, 1200);
+      q('walk').onclick = () => { ppl.forEach(p => { p.d = rnd(2, 30); p.a = rnd(0, 7); }); draw(); };
+      el.onclick = e => { const b = e.target.closest('[data-p]'); if (!b) return; chat = ppl.find(p => p.n === b.dataset.p); q('head').innerHTML = `${chat.e} <b class="text-white">${chat.n}</b> · connected over Bluetooth`; q('in').disabled = false; q('in').focus(); add('text-center text-xs text-emerald-400', `🔗 Paired with ${chat.n}`); draw(); };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v || !chat) return; add('ml-auto w-fit max-w-[75%] px-3 py-2 rounded-2xl bg-ember text-white', v); q('in').value = ''; const c = chat; ctx.after(() => { if (chat === c) add('w-fit max-w-[75%] px-3 py-2 rounded-2xl bg-white/10 text-white', pick(['wait are you the one in the red jacket?', 'hi stranger 👀', 'I can see you typing lol', 'this is so weird, I love it'])); }, 1100); };
+      draw();
+    });
+
+    def('Opposite Day', 'Downvotes are love. Unfollows are hugs. Upvoting is rude.', (el) => {
+      const [q] = sel(el);
+      let up = 3, down = 41, following = true, fans = 1204;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-6">
+        <div class="${CARD} space-y-4"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-ember grid place-items-center text-2xl">🙃</div><div class="flex-1"><div class="text-white font-semibold">@backwards_betty</div><div class="text-xs text-neutral-500"><span data-fans>1,204</span> people unfollowed her (she’s very loved)</div></div><button data-follow class="${G}">Following</button></div>
+          <div class="text-white text-lg">I think Mondays are the best day of the week.</div>
+          <div class="flex items-center gap-3"><button data-up class="${G}">⬆️ <span data-upn>3</span></button><button data-down class="${G}">⬇️ <span data-downn>41</span></button><div class="ml-auto text-sm">Love score <b data-score class="text-emerald-400 text-xl">38</b></div></div>
+          <div data-msg class="text-sm min-h-[1.25rem]"></div></div>
+        <div class="${CARD} space-y-3"><div class="${LBL}">Comments (displayed the correct way: backwards)</div><div data-cmts class="space-y-2 text-sm"></div><form data-form class="flex gap-2"><input data-in class="${IN} flex-1" maxlength="80" placeholder="Write a comment…"><button class="${B}">Post</button></form></div></div>`;
+      const rev = s => [...s].reverse().join('');
+      const cmts = ['This is terrible, I love it', 'Worst post ever, 10/10', 'Unfollowed you out of respect'];
+      const draw = () => {
+        q('upn').textContent = up; q('downn').textContent = down; q('score').textContent = down - up;
+        q('fans').textContent = fans.toLocaleString('en-US');
+        q('follow').textContent = following ? 'Following' : 'Unfollowed 💖';
+        q('follow').className = following ? G : B;
+        q('cmts').innerHTML = cmts.map(c => `<div class="p-3 rounded-xl bg-white/[.04] text-white">${esc(rev(c))}</div>`).join('');
+      };
+      q('up').onclick = () => { up++; q('msg').className = 'text-sm text-ember'; q('msg').textContent = '😠 You upvoted?! That’s so rude. She’s crying.'; tone(180, .25, 'square'); draw(); };
+      q('down').onclick = () => { down++; q('msg').className = 'text-sm text-emerald-400'; q('msg').textContent = pick(['💚 Aww, she felt that.', '🥹 That’s the nicest thing anyone’s done for her.', '💐 Downvote received with gratitude.']); seq([660, 990], .1, 'triangle'); draw(); };
+      q('follow').onclick = () => { following = !following; fans += following ? -1 : 1; draw(); };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; cmts.unshift(v); q('in').value = ''; draw(); };
+      draw();
+    });
+
+    def('Real Movie Spoilers', 'Pick a movie. We ruin it in under 5 seconds.', (el, ctx) => {
+      const [q] = sel(el);
+      const movies = [
+        ['The Sixth Sense', '1999', 'Bruce Willis’s character was dead the entire time.', '😱', 'from-slate-700 to-slate-900'],
+        ['Titanic', '1997', 'The ship sinks. Jack doesn’t make it. There was room on that door.', '🚪', 'from-sky-700 to-blue-950'],
+        ['Fight Club', '1999', 'Tyler Durden isn’t real. He’s the narrator.', '🤯', 'from-pink-700 to-zinc-900'],
+        ['Planet of the Apes', '1968', 'It was Earth all along. Statue of Liberty, on the beach.', '🗽', 'from-amber-700 to-stone-900'],
+        ['Psycho', '1960', 'Mother has been dead for years. Norman is “Mother”.', '🔪', 'from-zinc-600 to-black'],
+        ['The Empire Strikes Back', '1980', 'Darth Vader is Luke’s father.', '👀', 'from-indigo-800 to-black'],
+        ['Shutter Island', '2010', 'Teddy is the patient. The investigation is a role-play.', '🏝️', 'from-teal-700 to-slate-900'],
+        ['Se7en', '1995', 'It’s the head. In the box.', '📦', 'from-yellow-900 to-stone-950'],
+      ];
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_1.2fr] gap-6 items-start">
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3">${movies.map((m, i) => `<button data-m="${i}" class="aspect-[3/4] rounded-xl bg-gradient-to-br ${m[4]} p-3 text-left flex flex-col justify-end border border-white/10 hover:scale-[1.03] hover:border-ember transition"><span class="font-display text-xl text-white leading-none">${m[0].toUpperCase()}</span><span class="text-xs text-white/60">${m[1]}</span></button>`).join('')}</div>
+        <div class="rounded-2xl overflow-hidden border border-white/10 bg-black sticky top-24">
+          <div data-screen class="aspect-video relative grid place-items-center text-center p-6 bg-gradient-to-br from-zinc-900 to-black"><div class="text-neutral-500">▶ Pick a movie to spoil</div></div>
+          <div class="flex items-center gap-3 p-3 bg-zinc-900"><div class="w-9 h-9 rounded-full bg-ember grid place-items-center">🎬</div><div class="flex-1"><div class="text-white text-sm font-semibold">Real Movie Spoilers</div><div class="text-xs text-neutral-500">2.1M subscribers · zero mercy</div></div><div class="text-xs text-neutral-400">👍 <span data-likes>0</span></div></div></div></div>`;
+      let token = 0, likes = 0;
+      el.onclick = e => {
+        const b = e.target.closest('[data-m]'); if (!b) return; const m = movies[+b.dataset.m], my = ++token, s = q('screen');
+        s.innerHTML = `<div><div class="text-xs uppercase tracking-[.3em] text-ember mb-2">Spoiling</div><div class="font-display text-4xl text-white">${m[0].toUpperCase()}</div><div class="font-display text-7xl text-ember mt-3" data-cd>3</div></div>`;
+        [2, 1].forEach((n, i) => ctx.after(() => { if (my === token) { q('cd').textContent = n; tone(660, .08); } }, (i + 1) * 800));
+        ctx.after(() => {
+          if (my !== token) return;
+          s.innerHTML = `<div class="pop"><div class="text-6xl mb-3">${m[3]}</div><div class="text-white text-xl sm:text-2xl font-semibold max-w-md">${m[2]}</div><div class="absolute bottom-3 right-3 w-20 h-16 rounded-lg bg-zinc-800 border border-white/20 grid place-items-center text-4xl" data-react>😐</div></div>`;
+          sweep(200, 60, .6, 'sawtooth', 0, .1); likes += Math.floor(rnd(800, 4000)); q('likes').textContent = likes.toLocaleString('en-US');
+          ['😮', '😱', '🤣'].forEach((f, i) => ctx.after(() => { const r = q('react'); if (r && my === token) r.textContent = f; }, 400 + i * 600));
+        }, 2400);
+      };
+    });
+
+    def('Eau de Nether', 'Blend your notes, name your scent, then spritz a stranger.', (el) => {
+      const [q] = sel(el);
+      const notes = { Top: ['Gym sock', 'Hot car seat', 'Wet towel'], Heart: ['Lycra', 'Regret', 'Morning breath'], Base: ['Musk', 'Laundry basket', 'Mystery'] };
+      const chosen = { Top: 'Gym sock', Heart: 'Regret', Base: 'Musk' };
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div data-stage class="relative flex flex-col items-center py-6 overflow-hidden">
+          <div class="w-10 h-6 rounded-t-md bg-gradient-to-b from-amber-200 to-amber-500"></div><div class="w-6 h-3 bg-amber-600"></div>
+          <div data-bottle class="w-40 h-48 rounded-3xl border border-white/30 grid place-items-center text-center shadow-2xl transition-colors duration-500" style="backdrop-filter:blur(4px)"><div><div class="font-serif italic text-white text-2xl leading-tight" data-name></div><div class="text-[10px] uppercase tracking-[.3em] text-white/70 mt-1">Eau de Parfum</div></div></div>
+          <div data-react class="mt-4 text-sm text-neutral-300 min-h-[1.25rem]"></div>
+        </div>
+        <div class="space-y-4">${Object.entries(notes).map(([k, v]) => `<div><div class="${LBL} mb-2">${k} notes</div><div class="flex flex-wrap gap-2">${v.map(n => `<button data-n="${k}|${n}" class="px-3 py-1.5 rounded-full text-sm border transition">${n}</button>`).join('')}</div></div>`).join('')}
+          <div class="flex items-center gap-3 pt-2"><button data-spritz class="${B}">💨 Spritz</button><span class="text-neutral-400 text-sm">50 ml · <b class="text-white" data-price></b></span></div></div></div>`;
+      const colors = { 'Gym sock': '#7c8b5a', 'Hot car seat': '#b5562e', 'Wet towel': '#5b7b8a', Lycra: '#8e44ad', Regret: '#6b4a3a', 'Morning breath': '#9a8f4a', Musk: '#5a3b2e', 'Laundry basket': '#4f6b5a', Mystery: '#3b2f4f' };
+      const draw = () => {
+        el.querySelectorAll('[data-n]').forEach(b => { const [k, n] = b.dataset.n.split('|'), on = chosen[k] === n; b.className = `px-3 py-1.5 rounded-full text-sm border transition ${on ? 'bg-ember border-ember text-white' : 'border-white/15 text-neutral-300 hover:border-ember/60'}`; });
+        q('bottle').style.background = `linear-gradient(160deg, ${colors[chosen.Top]}cc, ${colors[chosen.Heart]}cc 55%, ${colors[chosen.Base]}ee)`;
+        q('name').textContent = 'Eau de ' + chosen.Heart;
+        q('price').textContent = '$' + (89 + Object.values(chosen).join('').length * 3);
+      };
+      el.onclick = e => { const b = e.target.closest('[data-n]'); if (b) { const [k, n] = b.dataset.n.split('|'); chosen[k] = n; draw(); } };
+      q('spritz').onclick = () => {
+        for (let i = 0; i < 6; i++) { const p = document.createElement('div'); p.textContent = '💨'; p.className = 'absolute text-2xl float-up pointer-events-none'; p.style.left = rnd(35, 65) + '%'; p.style.top = rnd(10, 30) + '%'; q('stage').append(p); setTimeout(() => p.remove(), 1300); }
+        sweep(6000, 3000, .3, 'sawtooth', 0, .02);
+        q('react').textContent = pick(['Passer-by: 🤢', 'Passer-by: 😳 “is that… urine?”', 'Passer-by: 🫣 “bold choice”', 'Passer-by: 🤔 “weirdly into it”', 'Your date: 🚪 (left)']);
+      };
+      draw();
+    });
+
+    def('Show & Tell', 'Flip through the book. Tap a censor bar to peek.', (el) => {
+      const [q] = sel(el);
+      const pages = [
+        ['📖', 'SHOW & TELL', 'A picture book for grown-ups. Ages 18 to 108.'],
+        ['🍆', 'This is an eggplant.', 'Nobody has ever used it to mean an eggplant.'],
+        ['🍑', 'This is a peach.', 'Same deal. Ask your parents. Actually, don’t.'],
+        ['🌮', 'This is a taco.', 'We are not going to explain this one.'],
+        ['🎈', 'This is a balloon.', 'Sometimes it’s a different kind of balloon. Safety first!'],
+        ['🐓', 'This is a rooster.', 'Some people call it something else. Those people are 12.'],
+        ['🌙', 'THE END', 'Now you know. Go to bed.'],
+      ];
+      let p = 0;
+      el.innerHTML = `<div class="flex flex-col items-center gap-5"><div style="perspective:1200px" class="w-full max-w-md"><div data-page class="page3d rounded-2xl bg-[#fdf6e3] text-[#3b2a14] p-8 shadow-2xl min-h-[340px] flex flex-col items-center justify-center text-center" style="font-family:'Comic Sans MS','Marker Felt',cursive"></div></div>
+        <div class="flex items-center gap-4"><button data-prev class="${G}">← Back</button><span data-pn class="text-sm text-neutral-400"></span><button data-next class="${B}">Turn page →</button></div></div>`;
+      const draw = () => {
+        const [e, t, s] = pages[p], cens = p > 0 && p < pages.length - 1;
+        q('page').innerHTML = `<div class="relative text-[110px] leading-none mb-5">${e}${cens ? '<button data-cens class="absolute inset-x-[-10px] top-1/2 -translate-y-1/2 h-10 bg-black text-white text-xs font-bold tracking-[.3em] rounded">CENSORED</button>' : ''}</div><div class="text-2xl font-bold">${t}</div><div class="mt-2 text-sm opacity-80 max-w-xs">${s}</div>`;
+        q('pn').textContent = `${p + 1} / ${pages.length}`; q('prev').disabled = p === 0; q('next').disabled = p === pages.length - 1;
+      };
+      const turn = d => { const pg = q('page'); pg.style.transform = `rotateY(${d > 0 ? -90 : 90}deg)`; sweep(1800, 600, .2, 'triangle', 0, .03); setTimeout(() => { p = clamp(p + d, 0, pages.length - 1); draw(); pg.style.transform = 'rotateY(0)'; }, 300); };
+      q('prev').onclick = () => turn(-1); q('next').onclick = () => turn(1);
+      el.onclick = e => { const c = e.target.closest('[data-cens]'); if (c) { c.style.opacity = c.style.opacity === '0' ? '1' : '0'; } };
+      draw();
+    });
+
+    def('Explain Like I’m 5', 'Pick a topic (or type one) and slide from toddler to professor.', (el, ctx) => {
+      const [q] = sel(el);
+      const T = {
+        'Black holes': ['A black hole is a spot in space that’s SO hungry it eats everything, even light, and never says thank you.', 'When a huge star collapses, its gravity gets so strong that nothing — not even light — can escape once it crosses the edge, called the event horizon.', 'A region of spacetime where escape velocity exceeds c, bounded by an event horizon at the Schwarzschild radius r = 2GM/c².'],
+        'Inflation': ['Your money is a cookie that gets a tiny bit smaller every year, so you can buy less cookie.', 'When prices across the economy go up, each dollar buys less. It often happens when there’s more money chasing the same amount of stuff.', 'A sustained rise in the general price level, typically measured via CPI, driven by demand-pull, cost-push or monetary expansion dynamics.'],
+        'Blockchain': ['It’s a notebook everyone in class has a copy of, so nobody can secretly erase that you owe them a sticker.', 'A shared record copied across many computers. New entries are chained to old ones, so changing history is obvious.', 'An append-only distributed ledger of cryptographically linked blocks, with a consensus mechanism (PoW/PoS) ensuring agreement among untrusted nodes.'],
+        'The Internet': ['Lots of computers holding hands and passing notes really, really fast.', 'A giant network of networks. Your data is chopped into little packets that hop between routers until they reach the right computer.', 'A global network of autonomous systems interconnected via BGP, moving packets with the TCP/IP suite over heterogeneous physical links.'],
+        'Taxes': ['Everyone puts some of their allowance in a big jar, and the town uses it to buy roads, schools and firefighters.', 'The government takes a share of what people earn and spend, and uses it to pay for public services like hospitals and roads.', 'Compulsory levies on income, consumption and capital, structured progressively or regressively, financing public goods and redistributive transfers.'],
+      };
+      let topic = 'Black holes', lvl = 0, token = 0;
+      const custom = t => [`Imagine ${t} is a big box of LEGO. Some pieces go here, some go there, and grown-ups argue about which is which.`, `${t} is a thing people study. It has rules, history and a Wikipedia page longer than your homework.`, `${t}: the literature is extensive and contested. Anyone who says it’s simple is selling a course.`];
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_1.3fr] gap-6">
+        <div class="space-y-4"><div class="flex flex-wrap gap-2" data-topics></div>
+          <form data-form class="flex gap-2"><input data-in maxlength="40" class="${IN} flex-1" placeholder="Or type anything…"><button class="${G}">Explain</button></form>
+          <div class="${CARD}"><div class="flex justify-between text-sm text-neutral-400 mb-2"><span>🧒 Age 5</span><span>🧑 Age 15</span><span>🧑‍🏫 Professor</span></div><input data-lvl type="range" min="0" max="2" step="1" value="0" class="w-full accent-red-500"></div></div>
+        <div class="rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 text-[#2b1a0a] p-6 min-h-[220px] relative"><div class="flex items-center gap-3 mb-3"><span data-av class="text-4xl">🧒</span><span class="font-display text-2xl" data-topic></span></div><p data-out class="text-xl leading-relaxed"></p></div></div>`;
+      const run = () => {
+        const txt = (T[topic] || custom(topic))[lvl], my = ++token; let i = 0;
+        q('topic').textContent = topic.toUpperCase(); q('av').textContent = ['🧒', '🧑', '🧑‍🏫'][lvl]; q('out').textContent = '';
+        q('topics').innerHTML = Object.keys(T).map(t => `<button data-t="${t}" class="px-3 py-1.5 rounded-full text-sm border transition ${t === topic ? 'bg-ember border-ember text-white' : 'border-white/15 text-neutral-300 hover:border-ember/60'}">${t}</button>`).join('');
+        const t = ctx.every(() => { if (my !== token) return clearInterval(t); i += 2; q('out').textContent = txt.slice(0, i); if (i >= txt.length) clearInterval(t); }, 20);
+      };
+      el.onclick = e => { const b = e.target.closest('[data-t]'); if (b) { topic = b.dataset.t; run(); } };
+      q('lvl').oninput = e => { lvl = +e.target.value; run(); };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; topic = v; q('in').value = ''; run(); };
+      run();
+    });
+
+    def('SatanMail', 'Confess your sins. Receive a personalised letter from below.', (el) => {
+      const [q] = sel(el);
+      const deeds = ['Didn’t refill the ice tray', 'Replied “k”', 'Clapped when the plane landed', 'Spoiled a movie', 'Took the last slice', 'Left someone on read', 'Used “per my last email”', 'Stood still on the left of the escalator'];
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
+        <form data-form class="${CARD} space-y-4"><input data-name maxlength="30" class="${IN} w-full" placeholder="Your name" value="Dario">
+          <div class="${LBL}">This year I…</div><div class="grid sm:grid-cols-2 gap-2">${deeds.map((d, i) => `<label class="flex items-center gap-2 text-sm text-neutral-300 cursor-pointer"><input type="checkbox" value="${i}" class="accent-red-500" ${i % 3 === 0 ? 'checked' : ''}> ${d}</label>`).join('')}</div>
+          <button class="${B} w-full">📩 Send to SatanMail</button></form>
+        <div data-letter class="rounded-2xl p-6 bg-gradient-to-b from-[#3a0a05] to-[#150505] border border-ember/40 min-h-[300px] grid place-items-center text-neutral-500">Your letter will arrive here. It will be warm.</div></div>`;
+      q('form').onsubmit = e => {
+        e.preventDefault();
+        const name = q('name').value.trim() || 'Mortal', sins = [...el.querySelectorAll('input[type=checkbox]:checked')].map(c => deeds[+c.value]);
+        const lvl = Math.round(sins.length / deeds.length * 666);
+        q('letter').className = 'rounded-2xl p-6 bg-gradient-to-b from-[#3a0a05] to-[#150505] border border-ember/40 min-h-[300px] pop';
+        q('letter').innerHTML = `<div class="text-sm text-ember tracking-[.3em] uppercase mb-1">From: satan@satanmail.com</div><div class="text-4xl mb-4">😈🔥</div>
+          <div class="font-serif italic text-neutral-200 space-y-3 text-lg"><p>Dear ${esc(name)},</p>
+          <p>${sins.length ? `I’ve been watching. You ${sins.map(s => s.charAt(0).toLowerCase() + s.slice(1)).join(', ').replace(/, ([^,]*)$/, ' and $1')}. Magnificent.` : 'You did nothing wrong this year. Honestly? Boring. Try harder.'}</p>
+          <p>Your naughtiness rating: <b class="not-italic font-display text-ember text-3xl">${lvl}%</b> of 666.</p>
+          <p>${lvl > 400 ? 'A reserved seat by the fire awaits you. Window side.' : lvl > 100 ? 'Promising. Keep it up and I’ll send a lump of premium coal.' : 'Disappointing. Santa says hi.'}</p>
+          <p>Eternally yours,<br>Lucifer 🖤</p></div>`;
+        sweep(400, 60, 1, 'sawtooth', 0, .1);
+      };
+    });
+
+    def('Ringtone Roast', 'Preview ringtones, then buy the one that ends friendships.', (el, ctx) => {
+      const [q] = sel(el);
+      const N = { A3: 220, C4: 262, D4: 294, E4: 330, F4: 349, G4: 392, A4: 440, B4: 494, C5: 523, D5: 587, E5: 659, G5: 784, A5: 880 };
+      const tones = [
+        { n: 'Mom Is Calling (Again)', d: 'Gets more passive-aggressive with every ring', play: () => [0, 1, 2].forEach(k => seq([N.C5, N.E5, N.G5, 0].map(f => f && f * (1 + k * .06)), .12, 'triangle', .1 + k * .03)), len: 1.5 },
+        { n: 'Boss Detector', d: 'Pure panic, in sine wave form', play: () => seq([N.A5, N.E5, N.A5, N.E5, N.A5, N.E5, N.A5, N.E5], .14, 'square', .08), len: 1.2 },
+        { n: 'Dramatic Ex', d: 'For when they call at 2 AM', play: () => seq([N.D4, 0, N.C4, 0, N.A3, N.A3, N.A3, 0], .22, 'sawtooth', .08), len: 1.8 },
+        { n: 'Fake Important Call', d: 'Escape any meeting', play: () => { for (let i = 0; i < 12; i++) tone(i % 2 ? 480 : 440, .05, 'sine', i * .05, .1); for (let i = 0; i < 12; i++) tone(i % 2 ? 480 : 440, .05, 'sine', .9 + i * .05, .1); }, len: 1.6 },
+        { n: 'Brick Phone Blues', d: 'The saddest polyphonic you’ve ever heard', play: () => seq([N.E5, N.D5, N.C5, N.A4, 0, N.G4, N.A4, N.C5, N.A4], .18, 'square', .07), len: 1.7 },
+        { n: 'Siren of Debt', d: 'Your bank, calling', play: () => { sweep(400, 1200, .6, 'sawtooth', 0, .06); sweep(1200, 400, .6, 'sawtooth', .6, .06); sweep(400, 1200, .6, 'sawtooth', 1.2, .06); }, len: 1.8 },
+      ];
+      let cart = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_260px] gap-6"><div class="space-y-2">${tones.map((t, i) => `<div class="${CARD} !p-4 flex items-center gap-4"><button data-play="${i}" class="w-11 h-11 rounded-full bg-ember text-white grid place-items-center shrink-0 hover:scale-105 transition">▶</button><div class="flex-1 min-w-0"><div class="text-white font-semibold truncate">${t.n}</div><div class="text-xs text-neutral-500 truncate">${t.d}</div></div><div class="eq h-6 flex items-end" data-eq="${i}">${'<span></span>'.repeat(6)}</div><button data-buy="${i}" class="${G} !px-3">$0.99</button></div>`).join('')}</div>
+        <div class="${CARD} self-start text-center"><div class="text-6xl mb-2">📱</div><div class="${LBL}">Cart</div><div data-cart class="font-display text-5xl text-white">0</div><div data-msg class="text-sm text-neutral-400 mt-2">ringtones</div></div></div>`;
+      el.onclick = e => {
+        const p = e.target.closest('[data-play]'), b = e.target.closest('[data-buy]');
+        if (p) {
+          const i = +p.dataset.play, t = tones[i]; t.play(); p.textContent = '♪';
+          const eq = el.querySelector(`[data-eq="${i}"]`).children;
+          const iv = ctx.every(() => [...eq].forEach(s => s.style.height = rnd(4, 24) + 'px'), 90);
+          ctx.after(() => { clearInterval(iv); [...eq].forEach(s => s.style.height = '4px'); p.textContent = '▶'; }, t.len * 1000);
+        }
+        if (b) { cart++; q('cart').textContent = cart; q('msg').textContent = `“${tones[+b.dataset.buy].n}” added. Your friends will hate it.`; b.textContent = '✓'; }
+      };
+    });
+
+    def('Porn Dub', 'Press play, switch languages mid-scene. Totally SFW (it’s about plumbing).', (el, ctx) => {
+      const [q] = sel(el);
+      const L = {
+        English: ['*ding dong* Hi, I’m here about the pipes.', 'Oh thank goodness. They’ve been leaking all week.', 'Let me take a look under the sink…', 'Wow. That is a… big wrench.', '*dramatic saxophone*'],
+        Hrvatski: ['*ding dong* Bok, došao sam zbog cijevi.', 'Hvala Bogu. Cure cijeli tjedan.', 'Da pogledam ispod sudopera…', 'Joj. To je… veliki ključ.', '*dramatični saksofon*'],
+        Pirate: ['*ding dong* Ahoy! I be here fer yer pipes.', 'Thank the seas! They be leakin’ all week.', 'Let me inspect below deck…', 'Shiver me timbers. That be a mighty wrench.', '*sea-shanty saxophone*'],
+        Shakespeare: ['*knock knock* Good morrow! I come anent thy pipes.', 'Praise be! They have wept this sennight.', 'Pray, let me peer beneath thy basin…', 'Forsooth. ’Tis a… most prodigious wrench.', '*a lute, dramatically*'],
+        Anime: ['*ding dong* Konnichiwa!! I-I came for the pipes, senpai!', 'Arigatou!! They’ve been leaking desu!', 'L-let me look under the sink… baka!', 'S-sugoi… what a big wrench…!', '*anime gasp*'],
+      };
+      const scenes = ['🚪🧑‍🔧', '🧑‍🔧🙋', '🧑‍🔧🔧🚰', '😳🔧', '🎷🎬'];
+      let lang = 'English', idx = -1, playing = false;
+      el.innerHTML = `<div class="space-y-4"><div class="text-sm rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 px-4 py-2">⚖️ Legal note: dubbing someone else’s clip without rights is content theft. This prototype dubs our own very classy plumbing film.</div>
+        <div class="grid lg:grid-cols-[1fr_260px] gap-6">
+          <div class="rounded-2xl overflow-hidden border border-white/10 bg-black"><div class="aspect-video relative grid place-items-center bg-gradient-to-br from-zinc-800 to-black"><div data-scene class="text-7xl sm:text-8xl transition-all">🎬</div><div data-sub class="absolute bottom-5 inset-x-6 text-center text-white text-lg sm:text-xl font-semibold" style="text-shadow:0 2px 6px #000"></div><div data-wave class="absolute top-3 right-3 text-ember bars opacity-0">${'<i></i>'.repeat(5)}</div></div>
+            <div class="flex items-center gap-3 p-3 bg-zinc-900"><button data-play class="w-10 h-10 rounded-full bg-ember text-white">▶</button><div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden"><div data-prog class="h-full bg-ember transition-all duration-500" style="width:0%"></div></div></div></div>
+          <div class="space-y-2"><div class="${LBL}">Dub language</div>${Object.keys(L).map(k => `<button data-lang="${k}" class="w-full text-left px-4 py-2.5 rounded-xl border text-sm transition">${k}</button>`).join('')}</div></div></div>`;
+      const draw = () => {
+        el.querySelectorAll('[data-lang]').forEach(b => b.className = `w-full text-left px-4 py-2.5 rounded-xl border text-sm transition ${b.dataset.lang === lang ? 'border-ember bg-ember/15 text-white' : 'border-white/10 text-neutral-300 hover:border-ember/60'}`);
+        q('sub').textContent = idx >= 0 ? L[lang][idx] : ''; q('scene').textContent = idx >= 0 ? scenes[idx] : '🎬';
+        q('prog').style.width = ((idx + 1) / scenes.length * 100) + '%'; q('play').textContent = playing ? '❚❚' : '▶';
+        q('wave').style.opacity = playing ? 1 : 0;
+      };
+      ctx.every(() => { if (!playing) return; idx++; if (idx >= scenes.length) { playing = false; idx = scenes.length - 1; } else tone(rnd(180, 320), .2, 'triangle', 0, .04); draw(); }, 2200);
+      q('play').onclick = () => { if (!playing && idx >= scenes.length - 1) idx = -1; playing = !playing; if (playing && idx < 0) { idx = 0; } draw(); };
+      el.onclick = e => { const b = e.target.closest('[data-lang]'); if (b) { lang = b.dataset.lang; draw(); } };
+      draw();
+    });
+
+    def('You Control My Life', 'Pay to boss me around. Commands run in the order paid.', (el, ctx) => {
+      const [q] = sel(el);
+      const menu = [['Eat a raw onion', 10, '🧅'], ['Call my mom and say “I know what you did”', 5, '📞'], ['Do 20 push-ups', 3, '💪'], ['Dye hair green', 100, '💚'], ['Learn a TikTok dance', 20, '💃'], ['Propose to a stranger (with a ring pop)', 50, '💍']];
+      let queue = [], now = null, prog = 0, earned = 0, sanity = 100;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_1fr] gap-6">
+        <div class="space-y-4"><div class="rounded-2xl bg-black border border-white/10 overflow-hidden"><div class="aspect-video grid place-items-center relative bg-gradient-to-br from-zinc-800 to-black"><div data-now class="text-center px-6"><div class="text-6xl">🧍</div><div class="text-neutral-400 mt-2">Waiting for orders…</div></div><div class="absolute top-3 left-3 text-xs bg-ember text-white px-2 py-0.5 rounded">● LIVE</div></div><div class="h-1.5 bg-white/10"><div data-prog class="h-full bg-ember transition-all" style="width:0%"></div></div></div>
+          <div class="grid grid-cols-2 gap-3"><div class="${CARD}"><div class="${LBL}">Earned</div><div data-earned class="font-display text-4xl text-white">$0</div></div><div class="${CARD}"><div class="${LBL}">Sanity</div><div data-sanity class="font-display text-4xl text-white">100%</div></div></div></div>
+        <div class="space-y-2"><div class="${LBL}">Command menu</div>${menu.map((m, i) => `<button data-cmd="${i}" class="w-full flex items-center gap-3 p-3 rounded-xl border border-white/10 hover:border-ember/60 transition text-left"><span class="text-2xl">${m[2]}</span><span class="flex-1 text-white text-sm">${m[0]}</span><span class="font-display text-xl text-ember">$${m[1]}</span></button>`).join('')}
+          <div class="${LBL} pt-3">Queue</div><div data-queue class="text-sm text-neutral-400">Empty. I’m free. Terrifying.</div></div></div>`;
+      const draw = () => {
+        q('queue').innerHTML = queue.length ? queue.map((m, i) => `<div>${i + 1}. ${m[2]} ${m[0]} <span class="text-neutral-500">· paid by @${m.u}</span></div>`).join('') : 'Empty. I’m free. Terrifying.';
+        q('earned').textContent = fmt(earned); q('sanity').textContent = Math.max(0, sanity) + '%';
+      };
+      el.onclick = e => { const b = e.target.closest('[data-cmd]'); if (!b) return; const m = [...menu[+b.dataset.cmd]]; m.u = pick(['kiki', 'dave_88', 'you', 'mom', 'anon']); queue.push(m); earned += m[1]; tone(1400, .08, 'triangle'); tone(1800, .1, 'triangle', .07); draw(); };
+      ctx.every(() => {
+        if (!now && queue.length) { now = queue.shift(); prog = 0; q('now').innerHTML = `<div class="text-6xl pop">${now[2]}</div><div class="text-white text-xl mt-2 font-semibold">NOW: ${now[0]}</div><div class="text-neutral-500 text-sm">paid by @${now.u}</div>`; draw(); }
+        if (now) { prog += 10; q('prog').style.width = prog + '%'; if (prog >= 100) { sanity -= Math.ceil(now[1] / 4); now = null; q('prog').style.width = '0%'; q('now').innerHTML = `<div class="text-6xl">${sanity > 50 ? '😅' : sanity > 0 ? '🫠' : '💀'}</div><div class="text-neutral-400 mt-2">Done. ${queue.length ? 'Next!' : 'Waiting for orders…'}</div>`; draw(); } }
+      }, 300);
+      draw();
+    });
+
+    def('Fake DJ', 'Start the beat, drop the bass, hype the crowd. Then pull back the camera.', (el, ctx) => {
+      const [q] = sel(el);
+      let playing = false, step = 0, hype = 20, revealed = false, xf = 50;
+      el.innerHTML = `<div data-stage class="relative rounded-2xl overflow-hidden border border-white/10 transition-all duration-700">
+        <div data-bg class="absolute inset-0 bg-gradient-to-b from-indigo-900 via-fuchsia-800 to-cyan-600 transition-all duration-1000"></div>
+        <div data-scene class="absolute inset-x-0 top-4 text-center text-3xl tracking-[.5em] opacity-80">🌴 🏰 🍾 🌴</div>
+        <div data-label class="absolute top-14 inset-x-0 text-center text-xs uppercase tracking-[.4em] text-white/70">Malibu Mansion · Pool Party</div>
+        <div class="relative pt-24 pb-6 px-4 sm:px-8">
+          <div class="grid grid-cols-[1fr_auto_1fr] gap-4 sm:gap-8 items-center max-w-2xl mx-auto">
+            <div data-d1 class="aspect-square rounded-full border-4 border-zinc-700 grid place-items-center" style="background:repeating-radial-gradient(#111 0 3px,#222 3px 6px)"><div class="w-1/3 h-1/3 rounded-full bg-ember grid place-items-center text-white font-display text-xs">A</div></div>
+            <div class="text-6xl">🧑‍🎤</div>
+            <div data-d2 class="aspect-square rounded-full border-4 border-zinc-700 grid place-items-center" style="background:repeating-radial-gradient(#111 0 3px,#222 3px 6px)"><div class="w-1/3 h-1/3 rounded-full bg-cyan-400 grid place-items-center text-black font-display text-xs">B</div></div>
+          </div>
+          <div data-crowd class="text-center text-3xl mt-6 tracking-widest">🙌🕺💃🙌🕺💃🙌</div>
+          <div class="max-w-md mx-auto mt-4 bg-black/40 rounded-xl p-3 backdrop-blur"><div class="flex justify-between text-xs text-white/70"><span>A</span><span>crossfader</span><span>B</span></div><input data-xf type="range" min="0" max="100" value="50" class="w-full accent-red-500"><div class="text-xs text-white/70 mt-1">Hype <div class="h-2 bg-white/10 rounded-full overflow-hidden mt-1"><div data-hype class="h-full bg-ember transition-all" style="width:20%"></div></div></div></div>
+        </div></div>
+        <div class="flex flex-wrap gap-3 mt-4"><button data-play class="${B}">▶ Start beat</button><button data-drop class="${G}">💥 DROP</button><button data-reveal class="${G}">🎥 Pull back camera</button><span data-msg class="text-sm text-neutral-400 self-center"></span></div>`;
+      const kick = () => { try { const a = audio(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(40, t + .15); g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .2); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + .22); } catch (e) {} };
+      const draw = () => {
+        q('d1').classList.toggle('spin', playing); q('d2').classList.toggle('spin', playing);
+        q('d1').style.opacity = .4 + .6 * (1 - xf / 100); q('d2').style.opacity = .4 + .6 * (xf / 100);
+        q('hype').style.width = hype + '%'; q('play').textContent = playing ? '❚❚ Stop beat' : '▶ Start beat';
+      };
+      ctx.every(() => {
+        if (!playing) { hype = Math.max(0, hype - .5); draw(); return; }
+        if (step % 2 === 0) kick();
+        if (step % 4 === 2) tone(6000 * (.5 + xf / 200), .03, 'square', 0, .02);
+        if (step % 8 === 4) tone(xf > 50 ? 330 : 220, .1, 'sawtooth', 0, .04);
+        step++; hype = Math.max(10, hype - .3);
+        if (step % 2 === 0) q('crowd').style.transform = `translateY(${step % 4 ? -4 : 0}px)`;
+        draw();
+      }, 250);
+      q('play').onclick = () => { playing = !playing; audio(); draw(); };
+      q('xf').oninput = e => { xf = +e.target.value; draw(); };
+      q('drop').onclick = () => { sweep(120, 30, .8, 'sawtooth', 0, .3); kick(); hype = Math.min(100, hype + 30); const s = q('stage'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); q('msg').textContent = revealed ? 'The cat is unimpressed.' : pick(['THE CROWD GOES WILD', 'A model fell in the pool', 'Somebody cried']); draw(); };
+      q('reveal').onclick = () => {
+        revealed = !revealed;
+        q('bg').className = `absolute inset-0 transition-all duration-1000 ${revealed ? 'bg-gradient-to-b from-zinc-600 to-zinc-800' : 'bg-gradient-to-b from-indigo-900 via-fuchsia-800 to-cyan-600'}`;
+        q('scene').textContent = revealed ? '🧰 🚲 📦 🪜' : '🌴 🏰 🍾 🌴';
+        q('label').textContent = revealed ? 'Parents’ garage · Tuesday' : 'Malibu Mansion · Pool Party';
+        q('crowd').textContent = revealed ? '🔊 applause.mp3   🐈' : '🙌🕺💃🙌🕺💃🙌';
+        q('reveal').textContent = revealed ? '🎥 Zoom back in' : '🎥 Pull back camera';
+      };
+      draw();
+    });
+
+    def('Stay in Touch', 'Set how often you want to talk. Skip ahead and see who you’re ghosting.', (el, ctx) => {
+      const [q] = sel(el);
+      const people = [{ n: 'Mom', e: '👩', f: 7, d: 3 }, { n: 'Ana', e: '👩‍🦰', f: 14, d: 10 }, { n: 'Luka (old roommate)', e: '🧔', f: 30, d: 25 }, { n: 'Grandpa', e: '👴', f: 14, d: 12 }];
+      let day = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6"><div class="space-y-2" data-list></div>
+        <div class="space-y-3"><div class="${CARD} text-center"><div class="${LBL}">Day</div><div data-day class="font-display text-5xl text-white">0</div></div><button data-skip class="${B} w-full">⏩ Skip ahead 1 week</button><div data-pings class="space-y-2"></div></div></div>`;
+      const draw = () => {
+        q('day').textContent = day;
+        q('list').innerHTML = people.map((p, i) => { const over = p.d >= p.f; return `<div class="${CARD} !p-4 flex flex-wrap items-center gap-3 ${over ? 'border-ember/60' : ''}"><span class="text-3xl">${p.e}</span><div class="flex-1 min-w-[8rem]"><div class="text-white">${p.n}</div><div class="text-xs ${over ? 'text-ember' : 'text-neutral-500'}">Last talked ${p.d} day${p.d === 1 ? '' : 's'} ago${over ? ' · overdue!' : ''}</div><div class="h-1 bg-white/10 rounded-full mt-2 overflow-hidden"><div class="h-full ${over ? 'bg-ember' : 'bg-emerald-400'}" style="width:${Math.min(100, p.d / p.f * 100)}%"></div></div></div><select data-f="${i}" class="bg-white/5 border border-white/15 rounded-full px-3 py-1.5 text-sm text-white">${[[7, 'Weekly'], [14, 'Every 2 weeks'], [30, 'Monthly']].map(([v, l]) => `<option value="${v}" ${p.f === v ? 'selected' : ''} class="bg-zinc-900">${l}</option>`).join('')}</select><button data-hi="${i}" class="${G} !px-3">👋 Text</button></div>`; }).join('');
+        q('pings').innerHTML = people.filter(p => p.d >= p.f).map(p => `<div class="notif rounded-2xl bg-white/90 text-black p-3 text-sm shadow"><div class="text-[11px] text-neutral-500">STAY IN TOUCH · now</div>It’s been ${p.d} days. Text ${p.n.split(' ')[0]}? ${p.e}</div>`).join('');
+      };
+      q('skip').onclick = () => { day += 7; people.forEach(p => p.d += 7); if (people.some(p => p.d >= p.f)) tone(1200, .1); draw(); };
+      el.onchange = e => { const s = e.target.closest('[data-f]'); if (s) { people[+s.dataset.f].f = +s.value; draw(); } };
+      el.onclick = e => { const b = e.target.closest('[data-hi]'); if (b) { people[+b.dataset.hi].d = 0; seq([880, 1320], .08, 'triangle'); draw(); } };
+      draw();
+    });
+
+    def('FilthyChat AI', 'Turn up the heat and chat. (It only knows nerdy innuendo.)', (el, ctx) => {
+      const [q] = sel(el);
+      const R = [
+        ['Hi there! How was your day? 😊', 'You seem nice!', 'Tell me about your hobbies 🙂'],
+        ['Oh, you’re cute when you type 😏', 'Is it warm in here or is it your Wi-Fi?', 'Stop it, I’m blushing (I don’t have a face)'],
+        ['Are you a keyboard? Because you’re just my type 😘', 'I like the way you handle your inputs 😏', 'Talk nerdy to me.'],
+        ['I’d let you clear my cache any day 😈', 'You can have admin access to my root directory 💾', 'Let’s go somewhere private… like incognito mode'],
+        ['Overclock me, baby 🔥', 'My fans are spinning at full speed 🥵', 'Error 69: too hot to compute 🫠'],
+      ];
+      let heat = 2;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_260px] gap-6">
+        <div class="rounded-2xl bg-white/5 border border-white/10 flex flex-col h-[420px]"><div class="flex items-center gap-3 p-4 border-b border-white/10"><div data-av class="w-10 h-10 rounded-full grid place-items-center text-xl transition-colors">🤖</div><div><div class="text-white font-semibold">Ember AI</div><div class="text-xs text-emerald-400">online · always</div></div></div>
+          <div data-log class="flex-1 overflow-y-auto p-4 space-y-2 text-sm"></div>
+          <form data-form class="p-3 border-t border-white/10 flex gap-2"><input data-in class="${IN} flex-1" placeholder="Say something…" maxlength="140"><button class="${B}">Send</button></form></div>
+        <div class="${CARD} self-start space-y-3"><div class="${LBL}">Heat level</div><div data-chili class="text-3xl"></div><input data-heat type="range" min="0" max="4" value="2" class="w-full accent-red-500"><p class="text-xs text-neutral-500">Level 5 has been reported to make laptops overheat.</p></div></div>`;
+      const add = (me, t) => { const d = document.createElement('div'); d.className = `pop w-fit max-w-[75%] px-3 py-2 rounded-2xl ${me ? 'ml-auto bg-ember text-white' : 'bg-white/10 text-white'}`; d.textContent = t; q('log').append(d); q('log').scrollTop = 1e6; return d; };
+      const draw = () => { q('chili').textContent = '🌶️'.repeat(heat + 1); q('av').style.background = ['#3b82f6', '#a855f7', '#ec4899', '#ef4444', '#f97316'][heat]; };
+      add(false, 'Hey you 👋 Set my heat level and say hi.');
+      q('heat').oninput = e => { heat = +e.target.value; draw(); };
+      q('form').onsubmit = e => {
+        e.preventDefault(); const v = q('in').value.trim(); if (!v) return; add(true, v); q('in').value = '';
+        const t = add(false, '…'); t.classList.add('opacity-60');
+        ctx.after(() => { t.textContent = pick(R[heat]); t.classList.remove('opacity-60'); tone(700 + heat * 120, .08, 'sine'); q('log').scrollTop = 1e6; }, rnd(700, 1400));
+      };
+      draw();
+    });
+
+    def('Airbnb Hourly', 'Choose your hours and extras, then book. No questions asked.', (el, ctx) => {
+      const [q] = sel(el);
+      let hours = 2, start = 20, opts = { entrance: true, sheets: true, noq: false };
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-6">
+        <div class="rounded-2xl overflow-hidden border border-white/10"><div class="aspect-[16/10] bg-gradient-to-br from-rose-300 via-amber-200 to-teal-300 grid place-items-center text-7xl relative">🛏️🕯️🪴<span class="absolute top-3 left-3 text-xs bg-white text-black px-2 py-1 rounded-full font-semibold">Superhost · discreet</span></div>
+          <div class="p-5 bg-white/5"><div class="text-white text-lg font-semibold">Cozy studio, downtown — rent by the hour</div><div class="text-sm text-neutral-400">★ 4.97 · 312 reviews · “Exactly what we needed” · “Nobody saw us”</div></div></div>
+        <div class="${CARD} space-y-4"><div class="flex justify-between items-baseline"><span class="font-display text-4xl text-white">$18<span class="text-base text-neutral-400 font-sans"> / hour</span></span><span class="text-xs text-neutral-500">min. 1 h</span></div>
+          <div><div class="flex justify-between text-sm text-neutral-400"><span>Start</span><span data-startv class="text-white"></span></div><input data-start type="range" min="8" max="23" value="20" class="w-full accent-red-500"></div>
+          <div><div class="flex justify-between text-sm text-neutral-400"><span>Duration</span><span data-hoursv class="text-white"></span></div><input data-hours type="range" min="1" max="6" value="2" class="w-full accent-red-500"></div>
+          ${[['entrance', 'Separate entrance', 0], ['sheets', 'Fresh-sheets guarantee', 5], ['noq', 'Self check-out, no small talk', 3]].map(([k, l, p]) => `<label class="flex items-center gap-3 text-sm text-neutral-300"><input type="checkbox" data-o="${k}" ${opts[k] ? 'checked' : ''} class="accent-red-500 w-4 h-4"> ${l} <span class="ml-auto text-neutral-500">${p ? '+$' + p : 'free'}</span></label>`).join('')}
+          <div class="border-t border-white/10 pt-3 flex justify-between text-white"><span>Total</span><b data-total></b></div>
+          <button data-book class="${B} w-full">Reserve</button><div data-conf class="text-sm"></div></div></div>`;
+      const total = () => hours * 18 + 10 + (opts.sheets ? 5 : 0) + (opts.noq ? 3 : 0);
+      const hh = h => `${String(h % 24).padStart(2, '0')}:00`;
+      const draw = () => { q('startv').textContent = hh(start); q('hoursv').textContent = `${hours} h (until ${hh(start + hours)})`; q('total').textContent = `$${total()} (incl. $10 cleaning)`; };
+      q('start').oninput = e => { start = +e.target.value; draw(); }; q('hours').oninput = e => { hours = +e.target.value; draw(); };
+      el.onchange = e => { const o = e.target.dataset.o; if (o) { opts[o] = e.target.checked; draw(); } };
+      let timer;
+      q('book').onclick = () => {
+        clearInterval(timer); let left = hours * 3600;
+        q('conf').innerHTML = `<div class="pop rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-emerald-200">✅ Booked ${hh(start)}–${hh(start + hours)}. Door code <b class="text-white font-mono">${Math.floor(rnd(1000, 9999))}</b>. Checkout in <b data-left class="text-white font-mono"></b> <span class="text-xs text-neutral-500">(demo runs at 60×)</span></div>`;
+        timer = ctx.every(() => { left = Math.max(0, left - 60); const l = q('left'); if (l) l.textContent = `${Math.floor(left / 3600)}:${String(Math.floor(left % 3600 / 60)).padStart(2, '0')}`; if (!left) { clearInterval(timer); q('conf').innerHTML += '<div class="text-ember mt-2">⏰ Time’s up! Next guests arrive in 15 min.</div>'; tone(880, .2); } }, 1000);
+        seq([659, 880], .1, 'triangle');
+        const l = q('left'); if (l) l.textContent = `${hours}:00`;
+      };
+      draw();
+    });
+
+    def('Online Girlfriend', 'Pick a plan, play a day of messages, or flip to the creator side.', (el, ctx) => {
+      const [q] = sel(el);
+      const plans = [
+        { n: 'Basic', p: 9, m: ['08:00 · Good morning ☀️ have a great day!', '22:30 · Good night 💤 sweet dreams'] },
+        { n: 'Plus', p: 29, m: ['13:00 · Did you eat lunch? 🥗', '18:10 · Your birthday is in 12 days. I didn’t forget 🎂'] },
+        { n: 'Premium', p: 99, m: ['15:40 · 🎙️ Voice note (0:14)', '02:13 · Why are you online at 2 AM? 🤨', '02:14 · Saw you liked someone’s photo. Interesting.'] },
+      ];
+      let plan = 0, creator = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-start">
+        <div class="space-y-3"><div class="inline-flex rounded-full bg-white/5 border border-white/10 p-1"><button data-side="0" class="px-4 py-1.5 rounded-full text-sm">Customer</button><button data-side="1" class="px-4 py-1.5 rounded-full text-sm">Creator</button></div><div data-left class="space-y-3"></div></div>
+        <div class="flex justify-center">${phone(`<div class="h-full flex flex-col bg-gradient-to-b from-pink-50 to-white"><div class="pt-12 pb-3 px-4 border-b border-pink-100 flex items-center gap-2"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 grid place-items-center">💋</div><div><div class="font-semibold text-sm">Your Girlfriend</div><div class="text-[10px] text-neutral-500">identity protected 🔒</div></div></div><div data-log class="flex-1 overflow-y-auto p-3 space-y-2 text-[13px]"></div><div class="p-3"><button data-day class="w-full py-2 rounded-full bg-rose-500 text-white text-sm font-semibold">▶ Play a day</button></div></div>`)}</div></div>`;
+      const draw = () => {
+        el.querySelectorAll('[data-side]').forEach(b => b.className = `px-4 py-1.5 rounded-full text-sm ${+b.dataset.side === +creator ? 'bg-ember text-white' : 'text-neutral-400'}`);
+        q('left').innerHTML = creator
+          ? `<div class="${CARD} space-y-2"><div class="${LBL}">Creator dashboard (anonymous)</div><div class="font-display text-5xl text-white">$${Math.round(842 * plans[plan].p * .8).toLocaleString('en-US')}</div><div class="text-sm text-neutral-400">this month · 842 subscribers on ${plans[plan].n} · you keep 80%</div><div class="text-xs text-neutral-500">Face never shown. Messages can be scheduled in bulk.</div></div>`
+          : plans.map((p, i) => `<button data-plan="${i}" class="w-full text-left ${CARD} transition ${i === plan ? 'ring-2 ring-ember' : 'hover:border-ember/60'}"><div class="flex justify-between"><b class="text-white">${p.n}</b><span class="font-display text-2xl text-ember">$${p.p}/mo</span></div><div class="text-sm text-neutral-400 mt-1">${plans.slice(0, i + 1).flatMap(x => x.m).length} messages a day${i === 2 ? ' · voice notes · mild jealousy' : i === 1 ? ' · remembers your birthday' : ''}</div></button>`).join('');
+      };
+      el.onclick = e => { const p = e.target.closest('[data-plan]'), s = e.target.closest('[data-side]'); if (p) { plan = +p.dataset.plan; draw(); } if (s) { creator = !!+s.dataset.side; draw(); } };
+      let token = 0;
+      q('day').onclick = () => {
+        const my = ++token, msgs = plans.slice(0, plan + 1).flatMap(x => x.m).sort(); q('log').innerHTML = '';
+        msgs.forEach((m, i) => ctx.after(() => { if (my !== token) return; const [t, txt] = m.split(' · '); const d = document.createElement('div'); d.className = 'pop'; d.innerHTML = `<div class="text-[10px] text-neutral-400 mb-0.5">${t}</div><div class="w-fit max-w-[85%] px-3 py-2 rounded-2xl bg-rose-100">${esc(txt)}</div>`; q('log').append(d); q('log').scrollTop = 1e6; tone(1000, .07); }, i * 700));
+      };
+      draw();
+    });
+
+    def('Split the Fans', 'Set the price, invite friends, watch the cost per person shrink.', (el) => {
+      const [q] = sel(el);
+      let price = 10, friends = [], markup = 0;
+      const pool = ['🧔', '👱', '🧑‍🦱', '👨‍🦲', '🧑🏽', '👨‍🦰', '🧑🏻', '👴', '🕵️'];
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-6"><div class="${CARD} space-y-5">
+          <div><div class="flex justify-between text-sm text-neutral-400"><span>Subscription price</span><b data-pv class="text-white"></b></div><input data-price type="range" min="5" max="50" value="10" class="w-full accent-red-500"></div>
+          <div><div class="flex justify-between text-sm text-neutral-400"><span>Your markup per seat</span><b data-mv class="text-white"></b></div><input data-markup type="range" min="0" max="5" step=".5" value="0" class="w-full accent-red-500"></div>
+          <div class="flex gap-2"><button data-add class="${B}">+ Invite a friend</button><button data-rm class="${G}">− Remove</button></div>
+          <div class="text-xs text-neutral-500">Max 9 per account before the platform notices 9 IPs logging in from 9 cities.</div></div>
+        <div class="${CARD} space-y-4 relative overflow-hidden"><div class="${LBL}">Seats</div><div data-seats class="flex flex-wrap gap-2 min-h-[3rem]"></div>
+          <div class="grid grid-cols-2 gap-3"><div><div class="${LBL}">Each pays</div><div data-each class="font-display text-5xl text-white"></div></div><div><div class="${LBL}">You profit</div><div data-profit class="font-display text-5xl text-ember"></div></div></div>
+          <div data-stamp class="absolute right-4 bottom-4 rotate-[-12deg] border-4 border-ember text-ember font-display text-2xl px-3 py-1 rounded opacity-0 transition">TOS VIOLATION</div></div></div>`;
+      const draw = () => {
+        const n = friends.length + 1, base = price / n, each = base + (friends.length ? markup : 0);
+        q('pv').textContent = `$${price}/mo`; q('mv').textContent = `+$${markup.toFixed(2)}`;
+        q('seats').innerHTML = `<span class="w-11 h-11 rounded-full bg-ember grid place-items-center text-xl" title="You">😎</span>` + friends.map(f => `<span class="pop w-11 h-11 rounded-full bg-white/10 grid place-items-center text-xl">${f}</span>`).join('');
+        q('each').textContent = fmt2(friends.length ? each : price);
+        q('profit').textContent = fmt2(markup * friends.length);
+        q('stamp').style.opacity = friends.length >= 3 ? 1 : 0;
+      };
+      q('price').oninput = e => { price = +e.target.value; draw(); };
+      q('markup').oninput = e => { markup = +e.target.value; draw(); };
+      q('add').onclick = () => { if (friends.length < 9) { friends.push(pool[friends.length]); tone(900, .07, 'triangle'); draw(); } };
+      q('rm').onclick = () => { friends.pop(); draw(); };
+      draw();
+    });
+
+    def('Is It Worth It?', 'Pick a creator, adjust the scores, get the verdict.', (el) => {
+      const [q] = sel(el);
+      const cs = [
+        { n: 'Creator A', c: 'Fitness', s: [8, 9, 3, 7, 6] },
+        { n: 'Creator B', c: 'Cosplay', s: [9, 6, 7, 10, 8] },
+        { n: 'Creator C', c: '“Lifestyle”', s: [3, 2, 1, 4, 2] },
+        { n: 'Creator D', c: 'Feet (allegedly)', s: [6, 8, 9, 5, 7] },
+      ];
+      const crit = ['Value for money', 'Posting frequency', 'Replies to DMs', 'Effort', 'Matches the preview'];
+      let cur = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[260px_1fr] gap-6"><div class="space-y-2" data-list></div><div class="${CARD} space-y-4" data-card></div></div>`;
+      const verdict = s => { const a = s.reduce((x, y) => x + y, 0) / s.length; return a >= 7.5 ? ['WORTH IT ✅', 'text-emerald-400', a] : a >= 5 ? ['MEH 🤷', 'text-amber-300', a] : ['SKIP ❌', 'text-ember', a]; };
+      const drawList = () => {
+        q('list').innerHTML = cs.map((c, i) => { const v = verdict(c.s); return `<button data-c="${i}" class="w-full text-left p-3 rounded-xl border transition ${i === cur ? 'border-ember bg-ember/10' : 'border-white/10 hover:border-ember/60'}"><div class="flex justify-between"><span class="text-white">${c.n}</span><span class="${v[1]} text-sm">${v[2].toFixed(1)}</span></div><div class="text-xs text-neutral-500">${c.c}</div></button>`; }).join('');
+      };
+      const draw = () => {
+        drawList();
+        const c = cs[cur], v = verdict(c.s);
+        q('card').innerHTML = `<div class="flex flex-wrap justify-between items-end gap-2"><div><div class="${LBL}">${c.c}</div><div class="text-2xl text-white font-semibold">${c.n}</div></div><div data-verdict class="font-display text-4xl ${v[1]}">${v[0]}</div></div>
+          ${crit.map((k, i) => `<div><div class="flex justify-between text-sm text-neutral-400"><span>${k}</span><b class="text-white">${c.s[i]}/10</b></div><input data-s="${i}" type="range" min="0" max="10" value="${c.s[i]}" class="w-full accent-red-500"></div>`).join('')}
+          <div class="${LBL}">Samples</div><div class="grid grid-cols-3 gap-2">${[1, 2, 3].map(() => `<button data-sample class="aspect-square rounded-lg bg-gradient-to-br from-pink-500/40 to-violet-600/40 grid place-items-center text-2xl blur-[1px]">🔒</button>`).join('')}</div><div data-msg class="text-xs text-neutral-500"></div>`;
+      };
+      el.onclick = e => { const b = e.target.closest('[data-c]'); if (b) { cur = +b.dataset.c; draw(); } if (e.target.closest('[data-sample]')) q('msg').textContent = 'Samples are for subscribers of our reviews. $1.99/mo. Yes, we see the irony.'; };
+      el.oninput = e => {
+        const s = e.target.dataset.s; if (s === undefined) return;
+        cs[cur].s[+s] = +e.target.value;
+        e.target.previousElementSibling.querySelector('b').textContent = e.target.value + '/10';
+        const v = verdict(cs[cur].s), vd = q('verdict'); vd.textContent = v[0]; vd.className = `font-display text-4xl ${v[1]}`;
+        drawList();
+      };
+      draw();
+    });
+
+    def('PornNews', 'Browse the “news”. Boss walking by? Hit the button (or Esc).', (el, ctx) => {
+      const [q] = sel(el);
+      const hot = [['BREAKING', 'Local plumber finally lays pipe after 3-hour delay', '🔧'], ['WEATHER', 'Hot and steamy all week, sweaty conditions expected', '🌡️'], ['MARKETS', 'Stocks go up, then down, then up again, then down', '📈'], ['SPORTS', 'Team scores twice in overtime, fans exhausted', '⚽'], ['OPINION', 'Is it size that matters, or how you use your spreadsheet?', '📊'], ['TECH', 'New phone vibrates 40% harder, reviewers speechless', '📱']];
+      const boring = [['ECONOMY', 'Q3 regional logistics report published', '📦'], ['LOCAL', 'Municipal budget hearing moved to Thursday', '🏛️'], ['FINANCE', 'Interest rates unchanged, analysts unsurprised', '🏦'], ['SPORTS', 'Chess club elects new treasurer', '♟️'], ['OPINION', 'In defence of the humble filing cabinet', '🗄️'], ['TECH', 'Spreadsheet software adds new font', '💾']];
+      let boss = false;
+      el.innerHTML = `<div class="space-y-3"><div class="flex flex-wrap items-center gap-3"><button data-boss class="${B}">🧑‍💼 Boss is coming!</button><span class="text-xs text-neutral-500">Esc also works</span></div><div data-site class="rounded-2xl overflow-hidden border border-white/10"></div></div>`;
+      const draw = () => {
+        const list = boss ? boring : hot;
+        q('site').innerHTML = `<div class="${boss ? 'bg-white text-zinc-900' : 'bg-zinc-950 text-white'} transition-colors"><div class="flex items-center justify-between px-5 py-3 border-b ${boss ? 'border-zinc-200' : 'border-white/10'}"><span class="font-serif text-2xl font-bold">${boss ? 'The Quarterly Ledger' : 'PORN<span class="text-ember">NEWS</span>'}</span><span class="text-xs opacity-60">${new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}</span></div>
+          <div class="${boss ? 'bg-zinc-100' : 'bg-ember'} px-5 py-1.5 text-xs font-semibold tracking-widest uppercase overflow-hidden whitespace-nowrap">${boss ? '● Markets flat · Weather mild · Nothing to see here' : '● LIVE · Things are heating up · Viewer discretion advised'}</div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px ${boss ? 'bg-zinc-200' : 'bg-white/10'}">${list.map(([tag, h, e], i) => `<article class="p-5 ${boss ? 'bg-white' : 'bg-zinc-950'} ${i === 0 ? 'sm:col-span-2 lg:col-span-1 lg:row-span-2' : ''}"><div class="aspect-video rounded-lg mb-3 grid place-items-center text-5xl ${boss ? 'bg-zinc-100' : 'bg-gradient-to-br from-ember/40 to-fuchsia-900/40'}">${e}</div><div class="text-[10px] font-bold tracking-[.25em] ${boss ? 'text-zinc-500' : 'text-ember'}">${tag}</div><div class="font-serif text-lg leading-snug mt-1">${h}</div></article>`).join('')}</div></div>`;
+        q('boss').textContent = boss ? '😮‍💨 Boss is gone' : '🧑‍💼 Boss is coming!';
+      };
+      q('boss').onclick = () => { boss = !boss; draw(); };
+      ctx.on(window, 'keydown', e => { if (e.key === 'Escape') { boss = !boss; draw(); } });
+      draw();
+    });
+
+    def('Moanflix', 'Hover the rows, open a title, and see if you’re still watching.', (el, ctx) => {
+      const [q] = sel(el);
+      const rows = [
+        ['Continue Watching', ['Breaking Bed', 'Stranger Thighs', 'Game of Moans', 'Pulp Friction'], true],
+        ['Trending Now', ['Lust in Translation', 'The Office Affair', 'Orange Is the New Blush', 'House of Cuffs', 'Fifty Shades of Beige']],
+        ['Because You Watched “The Plumber”', ['The Plumber 2: Re-Piped', 'Planet Earth: Mating Season', 'The Lord of the G-Strings', 'Pipe Dreams']],
+      ];
+      el.innerHTML = `<div class="relative rounded-2xl bg-black border border-white/10 p-5 overflow-hidden"><div class="flex items-center gap-6 mb-5"><span class="font-display text-3xl text-ember tracking-wide">MOANFLIX</span><span class="hidden sm:inline text-sm text-neutral-400">Home · Series · Films · My List</span></div>
+        ${rows.map(([t, items, cw]) => `<div class="mb-5"><div class="text-white font-semibold mb-2">${t}</div><div class="flex gap-3 overflow-x-auto pb-2">${items.map(n => { const h = [...n].reduce((a, c) => a + c.charCodeAt(0), 0) % 360; return `<button data-t="${esc(n)}" class="shrink-0 w-40 sm:w-44 aspect-video rounded-md relative overflow-hidden hover:scale-105 hover:z-10 transition text-left" style="background:linear-gradient(135deg,hsl(${h} 70% 35%),hsl(${(h + 60) % 360} 70% 12%))"><span class="absolute bottom-2 left-2 right-2 font-display text-white text-base leading-none drop-shadow">${n.toUpperCase()}</span>${cw ? `<span class="absolute bottom-0 left-0 h-1 bg-ember" style="width:${Math.floor(rnd(20, 85))}%"></span>` : ''}</button>`; }).join('')}</div></div>`).join('')}
+        <div data-modal class="hidden absolute inset-0 bg-black/90 grid place-items-center p-6 text-center"></div></div>`;
+      let token = 0;
+      const close = () => { token++; q('modal').classList.add('hidden'); };
+      el.onclick = e => {
+        const b = e.target.closest('[data-t]');
+        if (b) {
+          const my = ++token, m = q('modal'); m.classList.remove('hidden');
+          m.innerHTML = `<div class="w-full max-w-lg"><div class="font-display text-4xl text-white mb-2">${esc(b.dataset.t).toUpperCase()}</div><div class="text-sm text-neutral-400 mb-4">98% match · 18+ · 1 Season · Autoplay on</div><div class="h-1.5 bg-white/20 rounded-full overflow-hidden"><div data-p class="h-full bg-ember transition-all duration-500" style="width:0%"></div></div><div class="flex justify-center gap-3 mt-5"><button data-skip class="${G}">Skip intro ⏭</button><button data-x class="${G}">✕ Close</button></div><div data-still class="mt-6"></div></div>`;
+          let p = 0; const t = ctx.every(() => { if (my !== token) return clearInterval(t); p += 4; const bar = q('p'); if (bar) bar.style.width = p + '%'; if (p === 24) { clearInterval(t); q('still').innerHTML = `<div class="pop text-white text-xl mb-3">Are you still watching?</div><div class="flex justify-center gap-3"><button data-yes class="${B}">Yes, obviously</button><button data-x class="${G}">I’m done 😳</button></div>`; } }, 250);
+        }
+        if (e.target.closest('[data-skip]')) { const s = e.target.closest('[data-skip]'); s.textContent = 'Intro skipped. Classic.'; }
+        if (e.target.closest('[data-yes]')) q('still').innerHTML = '<div class="text-neutral-400">Next episode in 5… 4… (no judgement)</div>';
+        if (e.target.closest('[data-x]')) close();
+      };
+      ctx.on(window, 'keydown', e => { if (e.key === 'Escape') close(); });
+    });
+
+    def('Corruption App', 'Messages are in code and self-destruct. Try Decode, then the Panic button. (Satire. Don’t do crimes.)', (el, ctx) => {
+      const [q] = sel(el);
+      const msgs = [
+        { me: false, c: 'Hey! Still on for the barbecue? I’ll bring 30 sausages 🌭', r: '€30,000 in cash for the permit.' },
+        { me: true, c: 'Perfect. Make sure they’re the big ones.', r: 'Large bills only.' },
+        { me: false, c: 'Grandma’s place, Sunday, by the blue mailbox?', r: 'Handover: parking lot, Sunday.' },
+        { me: true, c: 'Love grandma ❤️', r: 'Confirmed. Permit approved.' },
+      ];
+      let decode = false, panicked = false, token = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center"><div class="flex justify-center">${phone(`<div class="h-full flex flex-col bg-zinc-900 text-white"><div class="pt-12 pb-3 px-4 border-b border-white/10 flex items-center gap-2"><div class="w-9 h-9 rounded-full bg-zinc-700 grid place-items-center" data-av>🤝</div><div><div class="font-semibold text-sm" data-who>“Uncle Mike”</div><div class="text-[10px] text-emerald-400">🔒 end-to-end · self-destructing</div></div></div><div data-log class="flex-1 overflow-y-auto p-3 space-y-2 text-[13px]"></div></div>`)}</div>
+        <div class="space-y-3"><label class="flex items-center gap-3 text-sm text-neutral-300"><input data-dec type="checkbox" class="accent-red-500 w-4 h-4"> 🔓 Decode messages</label>
+          <div class="flex flex-wrap gap-2"><button data-replay class="${G}">↻ Replay conversation</button><button data-panic class="${B}">🚨 PANIC</button></div>
+          <p class="text-sm text-neutral-400">Every message burns 8 seconds after it’s read. The panic button swaps the whole thread for something wholesome.</p></div></div>`;
+      const play = () => {
+        const my = ++token; panicked = false; q('log').innerHTML = ''; q('who').textContent = '“Uncle Mike”'; q('av').textContent = '🤝';
+        msgs.forEach((m, i) => ctx.after(() => {
+          if (my !== token || panicked) return;
+          const d = document.createElement('div'); d.className = `pop w-fit max-w-[85%] ${m.me ? 'ml-auto' : ''}`;
+          d.innerHTML = `<div class="px-3 py-2 rounded-2xl ${m.me ? 'bg-emerald-600' : 'bg-zinc-700'}"><span data-code>${m.c}</span><span data-real class="hidden text-amber-300">🔓 ${m.r}</span></div><div class="text-[10px] text-neutral-500 mt-0.5 ${m.me ? 'text-right' : ''}">🔥 <span data-tm>8</span>s</div>`;
+          q('log').append(d); apply(); tone(m.me ? 900 : 700, .06);
+          let s = 8; const t = ctx.every(() => { if (my !== token) return clearInterval(t); s--; const tm = d.querySelector('[data-tm]'); if (tm) tm.textContent = s; if (s <= 0) { clearInterval(t); d.classList.add('burn'); setTimeout(() => d.remove(), 1000); } }, 1000);
+        }, 400 + i * 1500));
+      };
+      const apply = () => el.querySelectorAll('[data-code]').forEach(c => { c.classList.toggle('hidden', decode); c.nextElementSibling.classList.toggle('hidden', !decode); });
+      q('dec').onchange = e => { decode = e.target.checked; apply(); };
+      q('replay').onclick = play;
+      q('panic').onclick = () => { token++; panicked = true; sweep(1200, 300, .5, 'square', 0, .05); q('who').textContent = 'Cat Lovers 🐈'; q('av').textContent = '🐱'; q('log').innerHTML = ['Look at this little guy 🐈', 'Omg the paws 😭', 'Sending more cats', '🐈‍⬛🐈🐈‍⬛'].map((t, i) => `<div class="pop w-fit max-w-[85%] ${i % 2 ? 'ml-auto' : ''} px-3 py-2 rounded-2xl ${i % 2 ? 'bg-emerald-600' : 'bg-zinc-700'}">${t}</div>`).join(''); };
+      play();
+    });
+
+    def('Only Camera', 'Take a live shot. Try uploading something instead. (Real camera optional.)', (el, ctx) => {
+      const [q] = sel(el);
+      const scenes = [['☕🥐', 'from-amber-200 to-orange-400', 'Café'], ['🌇', 'from-orange-300 to-purple-600', 'Sunset'], ['🐕', 'from-lime-200 to-emerald-500', 'Park'], ['🍝', 'from-red-200 to-rose-500', 'Dinner'], ['🌳🚲', 'from-sky-200 to-teal-500', 'Bike ride']];
+      let si = 0, stream = null;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-start"><div class="flex justify-center">${phone(`<div class="h-full flex flex-col bg-black"><div class="relative flex-1 overflow-hidden"><div data-sim class="absolute inset-0 bg-gradient-to-br grid place-items-center text-[110px] transition-all duration-700"></div><video data-vid class="absolute inset-0 w-full h-full object-cover hidden" playsinline muted></video><div data-flash class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div><div class="absolute top-12 left-3 text-[10px] text-white bg-black/40 px-2 py-0.5 rounded-full">● LIVE ONLY</div></div>
+          <div class="h-28 bg-black flex items-center justify-around px-6"><button data-up class="w-11 h-11 rounded-lg bg-zinc-800 text-xl" title="Upload from gallery">🖼️</button><button data-shoot class="w-16 h-16 rounded-full border-4 border-white bg-white/20 active:scale-90 transition"></button><button data-ai class="w-11 h-11 rounded-lg bg-zinc-800 text-xl" title="AI generate">✨</button></div></div>`)}</div>
+        <div class="space-y-3"><div class="flex flex-wrap gap-2 items-center"><button data-real class="${G}">📷 Use my real camera</button><span data-msg class="text-sm text-ember"></span></div><div class="${LBL}">Feed</div><div data-feed class="grid grid-cols-2 gap-3"><div class="text-sm text-neutral-500 col-span-2">Nothing yet. Go live.</div></div></div></div>`;
+      const sim = () => { const s = scenes[si]; q('sim').className = `absolute inset-0 bg-gradient-to-br ${s[1]} grid place-items-center text-[110px] transition-all duration-700`; q('sim').textContent = s[0]; };
+      ctx.every(() => { si = (si + 1) % scenes.length; sim(); }, 2600); sim();
+      const msg = t => { q('msg').textContent = t; };
+      const nope = b => { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); tone(180, .2, 'square'); };
+      q('up').onclick = () => { nope(q('up')); msg('Nice try. Live photos only. 📵'); };
+      q('ai').onclick = () => { nope(q('ai')); msg('🚫 No AI slop allowed here.'); };
+      q('real').onclick = async () => {
+        try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }); ctx.onClean(() => stream.getTracks().forEach(t => t.stop())); const v = q('vid'); v.srcObject = stream; v.classList.remove('hidden'); await v.play(); msg('Camera on. Smile — it’s real.'); q('real').disabled = true; }
+        catch (e) { msg('Camera unavailable — using the simulated viewfinder.'); }
+      };
+      q('shoot').onclick = () => {
+        const f = q('flash'); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); sweep(3000, 800, .12, 'square', 0, .05);
+        const feed = q('feed'); if (!feed.querySelector('figure')) feed.innerHTML = '';
+        const fig = document.createElement('figure'); fig.className = 'pop rounded-xl overflow-hidden border border-white/10 bg-white/5';
+        const v = q('vid'); let media;
+        if (stream && v.videoWidth) { const c = document.createElement('canvas'); c.width = 320; c.height = 320 * v.videoHeight / v.videoWidth; c.getContext('2d').drawImage(v, 0, 0, c.width, c.height); media = `<img src="${c.toDataURL('image/jpeg', .8)}" class="w-full aspect-square object-cover" alt="Live photo">`; }
+        else { const s = scenes[si]; media = `<div class="aspect-square bg-gradient-to-br ${s[1]} grid place-items-center text-5xl">${s[0]}</div>`; }
+        fig.innerHTML = `${media}<figcaption class="p-2 text-[11px] text-neutral-400">✅ Verified live · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · unedited</figcaption>`;
+        feed.prepend(fig); while (feed.children.length > 4) feed.lastElementChild.remove(); msg('');
+      };
+    });
+
+    def('Celebrity News', 'Breaking news every few seconds. Report your own sighting.', (el, ctx) => {
+      const [q] = sel(el);
+      const celebs = ['Brayden Starr', 'Lux Vanté', 'Kimberly K.', 'DJ Moonbeam', 'Chad Platinum', 'Sienna Gold'];
+      const acts = ['drank a glass of water', 'blinked twice in a row', 'looked at a pigeon', 'wore the same socks as yesterday', 'said “hmm” at a restaurant', 'tied a shoelace', 'yawned in public', 'bought a lemon', 'checked the time'];
+      const tags = ['BREAKING', 'EXCLUSIVE', 'SHOCKING', 'DEVELOPING', 'URGENT'];
+      const quotes = ['“We are all just processing this right now.”', '“Nobody saw this coming.”', '“The family asks for privacy.”', '“Experts are divided.”', '“This changes everything.”'];
+      let paused = false, ticker = [];
+      el.innerHTML = `<div class="space-y-4"><div class="rounded-2xl overflow-hidden border border-white/10">
+          <div class="bg-ember px-4 py-2 flex items-center gap-3"><span class="font-display text-white text-xl tracking-wide" data-tag>BREAKING</span><span class="text-white/80 text-xs">LIVE · 24/7 celebrity coverage</span></div>
+          <div class="p-6 bg-white/5"><div data-head class="font-display text-3xl sm:text-5xl text-white leading-tight"></div><div data-quote class="text-neutral-400 mt-3 italic"></div><div class="flex gap-6 mt-4 text-sm text-neutral-500"><span>😱 <b data-react class="text-white">0</b> fans reacting</span><span>📰 <b data-n class="text-white">0</b> stories today</span></div></div>
+          <div class="bg-black/50 px-4 py-2 text-sm text-neutral-300 overflow-hidden whitespace-nowrap" data-ticker></div></div>
+        <div class="flex flex-wrap gap-2"><button data-pause class="${G}">⏸ Stop the presses</button><form data-form class="flex gap-2 flex-1 min-w-[260px]"><input data-in maxlength="60" class="${IN} flex-1" placeholder="Report a sighting: e.g. Lux Vanté sneezed"><button class="${B}">Report</button></form></div></div>`;
+      let n = 0;
+      const publish = (head, tag) => {
+        n++; q('tag').textContent = tag; q('head').textContent = head; q('head').classList.remove('pop'); void q('head').offsetWidth; q('head').classList.add('pop');
+        q('quote').textContent = 'Sources close to the star: ' + pick(quotes); q('react').textContent = Math.floor(rnd(1e4, 9e5)).toLocaleString('en-US'); q('n').textContent = n;
+        ticker.unshift(head); ticker = ticker.slice(0, 6); q('ticker').textContent = ticker.join('   ◆   ');
+        tone(988, .08, 'square', 0, .05); tone(1318, .12, 'square', .08, .05);
+      };
+      const gen = () => publish(`${pick(celebs)} ${pick(acts)}${pick(['!', '!!', '?!', '. Fans in shock.'])}`, pick(tags));
+      gen(); ctx.every(() => { if (!paused) gen(); }, 3200);
+      q('pause').onclick = () => { paused = !paused; q('pause').textContent = paused ? '▶ Resume coverage' : '⏸ Stop the presses'; };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; publish(v + '!!', 'UNCONFIRMED'); q('in').value = ''; };
+    });
+
+    def('Gesture Pet', 'Hold Yell (Y), hold Cover eyes (C) when it needs to go, Shake (S) to play. Mic optional.', (el, ctx) => {
+      const [q] = sel(el);
+      const s = { energy: 70, fun: 60, bladder: 30 };
+      let yelling = false, covered = false, mic = 0, age = 0, dead = false, bubbleT = 0;
+      const colors = { energy: '#facc15', fun: '#ec4899', bladder: '#38bdf8' };
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center"><div class="flex justify-center">${phone(`<div class="h-full flex flex-col bg-gradient-to-b from-lime-100 to-amber-50">
+          <div class="p-4 pt-12 space-y-2 text-[11px]">${Object.keys(s).map(k => `<div><div class="flex justify-between"><span class="uppercase tracking-wider font-semibold">${k}</span><span data-v-${k}></span></div><div class="h-2 bg-black/10 rounded-full overflow-hidden"><div data-b-${k} class="h-full rounded-full transition-all duration-300" style="background:${colors[k]}"></div></div></div>`).join('')}</div>
+          <div class="flex-1 grid place-items-center relative"><div data-pet class="text-8xl transition-transform duration-200">🐣</div><div data-hands class="absolute inset-0 grid place-items-center text-[120px] opacity-0 transition-opacity bg-lime-100/80">🙈</div><div data-bubble class="absolute top-2 bg-white rounded-2xl px-3 py-1 text-sm shadow opacity-0 transition-opacity"></div></div>
+          <div class="p-4 text-center text-[11px] text-neutral-500" data-age>Age 0 days</div></div>`)}</div>
+        <div class="space-y-3"><div class="grid grid-cols-3 gap-3">
+          <button data-yell class="${CARD} !p-3 text-center hover:border-ember/60 select-none touch-none"><div class="text-4xl">🗣️</div><div class="text-sm text-white mt-1">Yell</div><div class="text-[11px] text-neutral-500">hold · Y</div></button>
+          <button data-cover class="${CARD} !p-3 text-center hover:border-ember/60 select-none touch-none"><div class="text-4xl">🙈</div><div class="text-sm text-white mt-1">Cover eyes</div><div class="text-[11px] text-neutral-500">hold · C</div></button>
+          <button data-shake class="${CARD} !p-3 text-center hover:border-ember/60 select-none"><div class="text-4xl">📳</div><div class="text-sm text-white mt-1">Shake</div><div class="text-[11px] text-neutral-500">click · S</div></button></div>
+          <div class="flex flex-wrap gap-2"><button data-mic class="${G}">🎤 Use my real microphone</button><button data-revive class="${B} hidden">🔄 New egg</button></div>
+          <p class="text-sm text-neutral-400">Yelling charges energy. When the bladder bar is high, cover your eyes and give it privacy — if you watch, it gets embarrassed. Shake to play. On a phone, physically shaking works too.</p></div></div>`;
+      const say = t => { const b = q('bubble'); b.textContent = t; b.style.opacity = 1; bubbleT = 6; };
+      const shake = () => { if (dead) return; s.fun = clamp(s.fun + 14, 0, 100); s.energy = clamp(s.energy - 3, 0, 100); const p = q('pet'); p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake'); say(pick(['wheee!', 'again!!', '🎉'])); seq([660, 880, 1100], .06, 'triangle', .06); };
+      const hold = (btn, set) => { btn.onpointerdown = e => { e.preventDefault(); set(true); }; btn.onpointerup = btn.onpointerleave = btn.onpointercancel = () => set(false); };
+      hold(q('yell'), v => yelling = v); hold(q('cover'), v => covered = v);
+      q('shake').onclick = shake;
+      ctx.on(window, 'keydown', e => { if (typing(e.target) || e.repeat) return; const k = e.key.toLowerCase(); if (k === 'y') yelling = true; if (k === 'c') covered = true; if (k === 's') shake(); }, true);
+      ctx.on(window, 'keyup', e => { const k = e.key.toLowerCase(); if (k === 'y') yelling = false; if (k === 'c') covered = false; });
+      ctx.on(window, 'devicemotion', e => { const a = e.accelerationIncludingGravity; if (a && Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z) > 35) shake(); });
+      q('mic').onclick = async () => { try { await useMic(ctx, l => mic = l); q('mic').textContent = '🎤 Mic on — yell!'; q('mic').disabled = true; } catch (e) { q('mic').textContent = 'Mic blocked — use the button'; } };
+      q('revive').onclick = () => { Object.assign(s, { energy: 70, fun: 60, bladder: 20 }); age = 0; dead = false; q('revive').classList.add('hidden'); say('hello again 🐣'); };
+      ctx.every(() => {
+        const yell = yelling || mic > .35;
+        q('hands').style.opacity = covered ? 1 : 0;
+        q('pet').style.transform = yell && !dead ? 'scale(1.18)' : '';
+        if (bubbleT > 0 && --bubbleT === 0) q('bubble').style.opacity = 0;
+        if (dead) return;
+        s.energy -= 1.1; s.fun -= .9; s.bladder += 1.4;
+        if (yell) { s.energy += 4.5; if (Math.random() < .15) say('⚡ AAAAH ⚡'); }
+        if (covered && s.bladder > 50) { s.bladder = 0; s.fun += 5; say('🚽 thank you for the privacy'); tone(500, .15, 'sine'); }
+        else if (covered && Math.random() < .1) say('why are you hiding? 🤨');
+        if (s.bladder >= 100) { s.bladder = 0; s.fun -= 30; say(covered ? 'phew' : '😳 you WATCHED?!'); tone(200, .3, 'square'); }
+        else if (s.bladder > 70 && !covered && Math.random() < .25) say('I need to go… 🙈 cover your eyes!');
+        Object.keys(s).forEach(k => s[k] = clamp(s[k], 0, 100));
+        age++;
+        if (s.energy <= 0 || s.fun <= 0) { dead = true; q('pet').textContent = '👻'; say(s.energy <= 0 ? 'died of exhaustion' : 'died of boredom'); q('revive').classList.remove('hidden'); tone(300, .6, 'sawtooth'); }
+        else q('pet').textContent = age > 160 ? '🐓' : age > 60 ? '🐥' : '🐣';
+        Object.keys(s).forEach(k => { q('b-' + k).style.width = s[k] + '%'; q('v-' + k).textContent = Math.round(s[k]); });
+        q('age').textContent = `Age ${Math.floor(age / 10)} days`;
+      }, 400);
+    });
+
+    def('Sneaky Sip', 'Toggle X-ray to see the hidden compartments. Fill them, then walk past security.', (el, ctx) => {
+      const [q] = sel(el);
+      const comps = [{ n: 'Strap flask', ml: 150, x: 8, y: 2, w: 10, h: 44 }, { n: 'False bottom', ml: 500, x: 22, y: 78, w: 56, h: 14 }, { n: 'Lining pouch', ml: 300, x: 30, y: 36, w: 40, h: 30 }, { n: '“Sunscreen” bottle', ml: 100, x: 72, y: 40, w: 12, h: 26 }];
+      let xray = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex justify-center"><div data-bag class="relative w-72 h-80 transition-all">
+          <div class="absolute left-1/2 -translate-x-1/2 top-0 w-40 h-24 border-[10px] border-b-0 rounded-t-full transition-colors" data-handle style="border-color:#8b5e34"></div>
+          <div data-body class="absolute inset-x-0 top-16 bottom-0 rounded-3xl transition-all duration-500" style="background:linear-gradient(160deg,#c48a52,#8b5e34)"><div class="absolute top-6 inset-x-0 text-center text-xs tracking-[.4em] text-white/70" data-brand>BEACH TOTE</div>
+            ${comps.map((c, i) => `<button data-c="${i}" data-comp class="absolute rounded-lg border-2 border-dashed transition-all duration-500 overflow-hidden" style="left:${c.x}%;top:${c.y}%;width:${c.w}%;height:${c.h}%"><div data-fill="${i}" class="absolute bottom-0 inset-x-0 bg-amber-400/80 transition-all duration-500" style="height:0%"></div></button>`).join('')}</div></div></div>
+        <div class="space-y-4"><div class="flex flex-wrap gap-2"><button data-x class="${G}">🩻 X-ray view</button><button data-walk class="${B}">🚶 Walk past security</button></div>
+          <div data-list class="space-y-2"></div><div class="${CARD} flex justify-between"><span class="text-neutral-400">Total smuggled</span><b data-total class="text-white">0 ml</b></div><div data-msg class="text-sm min-h-[1.25rem] text-neutral-300"></div></div></div>`;
+      const draw = () => {
+        q('body').style.background = xray ? 'linear-gradient(160deg,#0f2a3a,#05141d)' : 'linear-gradient(160deg,#c48a52,#8b5e34)';
+        q('handle').style.borderColor = xray ? '#1e4a63' : '#8b5e34';
+        q('brand').textContent = xray ? 'X-RAY' : 'BEACH TOTE';
+        el.querySelectorAll('[data-comp]').forEach(b => { const c = comps[+b.dataset.c]; b.style.borderColor = xray ? '#67e8f9' : 'transparent'; b.style.opacity = xray || c.full ? 1 : 0; b.querySelector('[data-fill]').style.height = c.full ? '100%' : '0%'; });
+        q('list').innerHTML = comps.map((c, i) => `<button data-c="${i}" class="w-full flex justify-between items-center p-3 rounded-xl border text-sm transition ${c.full ? 'border-amber-400/60 bg-amber-400/10 text-white' : 'border-white/10 text-neutral-300 hover:border-ember/60'}"><span>${c.full ? '🍾' : '◻️'} ${c.n}</span><span>${c.ml} ml</span></button>`).join('');
+        q('total').textContent = comps.reduce((a, c) => a + (c.full ? c.ml : 0), 0) + ' ml';
+      };
+      q('x').onclick = () => { xray = !xray; draw(); };
+      el.onclick = e => { const b = e.target.closest('[data-c]'); if (b) { const c = comps[+b.dataset.c]; c.full = !c.full; tone(c.full ? 500 : 300, .12, 'sine'); draw(); } };
+      q('walk').onclick = () => {
+        const prev = xray; xray = true; draw(); q('msg').textContent = '👮 Scanning…'; const bag = q('bag'); bag.style.transform = 'translateX(30px)';
+        ctx.after(() => { xray = prev; bag.style.transform = ''; draw(); const ml = comps.reduce((a, c) => a + (c.full ? c.ml : 0), 0); q('msg').textContent = ml ? pick(['👮 “Nice bag.” ✅ You’re in.', '👮 “Is that sunscreen?” — “Yes.” ✅', '👮 *yawns* ✅ Go ahead.']) : '👮 “Empty bag? Suspicious, but fine.” ✅'; seq([523, 784], .1, 'triangle'); }, 1500);
+      };
+      draw();
+    });
+
+    def('Bare Minimum', 'Less fabric, higher price. Try to get coverage even lower.', (el) => {
+      const [q] = sel(el);
+      let cov = 3, color = '#F0331F';
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div class="${CARD} grid place-items-center h-72 relative overflow-hidden"><div class="absolute inset-4 border border-dashed border-white/15 rounded-xl grid place-items-center text-xs text-neutral-600">full-size swatch (100%)</div><div data-sw class="relative rounded-full transition-all duration-300 shadow-lg"></div><div class="absolute bottom-3 left-0 right-0 text-center text-xs text-neutral-400" data-dim></div></div>
+        <div class="space-y-5"><div><div class="font-serif italic text-3xl text-white">Bare Minimum</div><div class="text-neutral-400 text-sm">Set of two pieces. Technically clothing.</div></div>
+          <div><div class="flex justify-between text-sm text-neutral-400"><span>Coverage</span><b data-cv class="text-white"></b></div><input data-cov type="range" min="0.5" max="5" step="0.1" value="3" class="w-full accent-red-500"></div>
+          <div class="flex gap-3">${['#F0331F', '#111111', '#f5f5f4', '#f9a8d4', '#a78bfa'].map(c => `<button data-col="${c}" class="w-8 h-8 rounded-full border-2 border-white/20" style="background:${c}"></button>`).join('')}</div>
+          <div class="flex items-center justify-between ${CARD} !p-4"><span class="text-neutral-400">Price</span><b data-price class="font-display text-4xl text-white"></b></div>
+          <button data-buy class="${B}">Add to cart</button><div data-msg class="text-sm text-neutral-400 min-h-[1.25rem]"></div></div></div>`;
+      const draw = () => {
+        const px = Math.sqrt(cov / 100) * 220;
+        q('sw').style.width = q('sw').style.height = px + 'px'; q('sw').style.background = color;
+        q('cv').textContent = cov.toFixed(1) + '%'; q('dim').textContent = `fabric used: ${(cov * 4.2).toFixed(1)} cm²`;
+        q('price').textContent = '$' + Math.round(39 + (5 - cov) * 60);
+      };
+      q('cov').oninput = e => { cov = +e.target.value; draw(); q('msg').textContent = cov <= .6 ? 'Any less and it’s a sticker.' : ''; };
+      el.onclick = e => { const c = e.target.closest('[data-col]'); if (c) { color = c.dataset.col; draw(); } };
+      q('buy').onclick = () => { q('msg').textContent = 'Added. Ships in an envelope. A small one. ✉️'; tone(880, .1, 'triangle'); };
+      draw();
+    });
+
+    def('Real 24-Hour Challenge', 'Watch the full 24 hours. Speed it up if you have a life.', (el, ctx) => {
+      const [q] = sel(el);
+      const events = [[0, '🎬 “This is gonna be SO easy guys”'], [2, '🍕 ordered pizza #1'], [5, '🥣 cereal for the 3rd time'], [8, '😴 chat caught me micro-sleeping'], [11, '🧍 chat voted: no sitting for an hour'], [14, '🎮 playing a game I hate, for content'], [17, '🫠 talking to the fridge. it answered'], [20, '🤡 why am I doing this'], [22, '🌅 the sun is up again?? again??'], [23, '😵 “…”'], [24, '🎉 DONE. 24:00:00. Going to sleep for a week.']];
+      let t = 0, speed = 600, shown = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6"><div class="rounded-2xl bg-black border border-white/10 overflow-hidden">
+          <div class="aspect-video relative grid place-items-center bg-gradient-to-br from-zinc-800 to-black"><div class="text-center"><div data-face class="text-7xl">😁</div><div data-clock class="font-mono text-4xl sm:text-6xl text-white mt-3">00:00:00</div><div class="text-xs text-neutral-500 mt-1">of 24:00:00 · no cuts · no editing</div></div><div class="absolute top-3 left-3 text-xs bg-ember text-white px-2 py-0.5 rounded">● LIVE</div><div class="absolute top-3 right-3 text-xs text-white bg-black/50 px-2 py-0.5 rounded">👁 <span data-view>1,204</span></div></div>
+          <div class="p-3"><div class="flex justify-between text-xs text-neutral-500 mb-1"><span>Energy</span><span data-ev></span></div><div class="h-2 bg-white/10 rounded-full overflow-hidden"><div data-energy class="h-full bg-gradient-to-r from-ember to-amber-400 transition-all" style="width:100%"></div></div></div></div>
+        <div class="space-y-3"><div class="flex gap-1">${[[60, '1 min/s'], [600, '10 min/s'], [3600, '1 h/s']].map(([v, l]) => `<button data-sp="${v}" class="flex-1 px-2 py-1.5 rounded-full text-xs border transition">${l}</button>`).join('')}</div><button data-reset class="${G} w-full">↺ Restart</button><div class="${LBL}">Stream log</div><div data-log class="space-y-1.5 text-sm max-h-64 overflow-y-auto"></div></div></div>`;
+      const fmtT = s => [s / 3600, s % 3600 / 60, s % 60].map(x => String(Math.floor(x)).padStart(2, '0')).join(':');
+      const drawSp = () => el.querySelectorAll('[data-sp]').forEach(b => b.className = `flex-1 px-2 py-1.5 rounded-full text-xs border transition ${+b.dataset.sp === speed ? 'bg-ember border-ember text-white' : 'border-white/15 text-neutral-300'}`);
+      ctx.every(() => {
+        if (t >= 86400) return;
+        t = Math.min(86400, t + speed / 10); const h = t / 3600;
+        q('clock').textContent = fmtT(t);
+        const en = Math.max(3, 100 - h * 4); q('energy').style.width = en + '%'; q('ev').textContent = Math.round(en) + '%';
+        q('face').textContent = t >= 86400 ? '🥳' : h > 20 ? '😵' : h > 15 ? '🫠' : h > 9 ? '😩' : h > 4 ? '😐' : '😁';
+        q('view').textContent = Math.floor(1200 + Math.sin(h) * 300 + h * 900 + rnd(0, 80)).toLocaleString('en-US');
+        while (shown < events.length && events[shown][0] <= h) { const d = document.createElement('div'); d.className = 'pop text-neutral-300'; d.innerHTML = `<span class="text-ember font-mono text-xs">${String(events[shown][0]).padStart(2, '0')}:00</span> ${events[shown][1]}`; q('log').prepend(d); shown++; tone(1200, .05, 'triangle', 0, .05); }
+      }, 100);
+      el.onclick = e => { const b = e.target.closest('[data-sp]'); if (b) { speed = +b.dataset.sp; drawSp(); } };
+      q('reset').onclick = () => { t = 0; shown = 0; q('log').innerHTML = ''; };
+      drawSp();
+    });
+
+    def('Moan Game', 'Hold the button or Space to make noise — louder flies higher. Real mic optional.', (el, ctx) => {
+      const [q] = sel(el);
+      el.innerHTML = `<div class="space-y-4"><div class="relative"><canvas data-c width="800" height="300" class="w-full rounded-2xl border border-white/10 bg-gradient-to-b from-[#2a0c0a] to-[#150505]"></canvas>
+          <div data-over class="absolute inset-0 grid place-items-center text-center bg-black/40 rounded-2xl"><div><div class="font-display text-5xl text-white" data-title>MOAN GAME</div><div class="text-neutral-300 text-sm mb-4 px-4" data-sub>Noise = altitude. Dodge the pillars. Neighbours not included.</div><button data-start class="${B}">Start</button></div></div></div>
+        <div class="flex flex-wrap items-center gap-3"><button data-hold class="${B} select-none touch-none">Hold to moan 😮</button><button data-mic class="${G}">🎤 Use real mic</button><div class="text-sm text-neutral-400">Score <b data-score class="text-white">0</b> · Best <b data-best class="text-white">0</b></div><div class="flex-1 min-w-[120px] h-2 bg-white/10 rounded-full overflow-hidden"><div data-lvl class="h-full bg-ember" style="width:0%"></div></div></div></div>`;
+      const c = q('c'), g = c.getContext('2d'), W = 800, H = 300, PX = 110;
+      let holding = false, mic = 0, level = 0, y = H - 30, obs = [], running = false, score = 0, best = 0, last = 0, spawnT = 0, osc = null;
+      const voice = on => {
+        try {
+          if (on && !osc) { const a = audio(); osc = { o: a.createOscillator(), g: a.createGain() }; osc.o.type = 'sine'; osc.o.frequency.value = 220; osc.g.gain.value = .0001; osc.o.connect(osc.g); osc.g.connect(a.destination); osc.o.start(); }
+          if (osc) { const a = audio(); osc.g.gain.setTargetAtTime(on ? .06 : .0001, a.currentTime, .05); }
+        } catch (e) {}
+      };
+      ctx.onClean(() => { try { osc && osc.o.stop(); } catch (e) {} });
+      const start = () => { obs = []; score = 0; y = H - 30; running = true; spawnT = .5; q('score').textContent = 0; q('over').classList.add('hidden'); };
+      q('start').onclick = start;
+      const hb = q('hold');
+      hb.onpointerdown = e => { e.preventDefault(); holding = true; voice(true); }; hb.onpointerup = hb.onpointerleave = hb.onpointercancel = () => { holding = false; voice(false); };
+      ctx.on(window, 'keydown', e => { if (e.code === 'Space' && !typing(e.target)) { e.preventDefault(); e.stopPropagation(); if (!running) { start(); return; } if (!holding) { holding = true; voice(true); } } }, true);
+      ctx.on(window, 'keyup', e => { if (e.code === 'Space') { holding = false; voice(false); } });
+      q('mic').onclick = async () => { try { await useMic(ctx, l => mic = l); q('mic').textContent = '🎤 Mic on'; q('mic').disabled = true; } catch (e) { q('mic').textContent = 'Mic blocked — use the button'; } };
+      ctx.raf(ts => {
+        const dt = Math.min(.05, (ts - (last || ts)) / 1000); last = ts;
+        const target = Math.max(holding ? 1 : 0, mic); level += (target - level) * Math.min(1, dt * 6);
+        if (osc) try { osc.o.frequency.setTargetAtTime(200 + level * 160, audio().currentTime, .05); } catch (e) {}
+        q('lvl').style.width = level * 100 + '%';
+        const ty = H - 30 - level * (H - 60); y += (ty - y) * Math.min(1, dt * 5);
+        if (running) {
+          spawnT -= dt; const speed = 220 + score * 6;
+          if (spawnT <= 0) { spawnT = rnd(1.1, 1.7); const gh = 120; obs.push({ x: W, w: 42, gy: rnd(30, H - 30 - gh), gh, passed: false }); }
+          obs.forEach(o => o.x -= speed * dt); obs = obs.filter(o => o.x > -60);
+          for (const o of obs) {
+            if (!o.passed && o.x + o.w < PX - 16) { o.passed = true; score++; q('score').textContent = score; tone(880, .06, 'triangle', 0, .06); }
+            if (PX + 14 > o.x && PX - 14 < o.x + o.w && (y - 14 < o.gy || y + 14 > o.gy + o.gh)) {
+              running = false; best = Math.max(best, score); q('best').textContent = best;
+              q('title').textContent = 'OOPS.'; q('sub').textContent = `Score ${score}. The neighbours filed a noise complaint.`; q('start').textContent = 'Again';
+              q('over').classList.remove('hidden'); tone(150, .4, 'sawtooth'); break;
+            }
+          }
+        }
+        g.clearRect(0, 0, W, H);
+        g.fillStyle = '#F0331F'; obs.forEach(o => { g.fillRect(o.x, 0, o.w, o.gy); g.fillRect(o.x, o.gy + o.gh, o.w, H - o.gy - o.gh); });
+        if (level > .15) { g.strokeStyle = `rgba(255,255,255,${level * .5})`; g.lineWidth = 2; for (let i = 1; i <= 3; i++) { g.beginPath(); g.arc(PX + 10, y, 14 + i * 8 * level, -.6, .6); g.stroke(); } }
+        g.font = '34px serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(level > .25 ? '😮' : '😐', PX, y);
+      });
+    });
+
+    def('BabyMaker3000', 'Classified. Hover the redactions. Guess the clearance code.', (el) => {
+      const [q] = sel(el);
+      let tries = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-2 gap-8">
+        <div class="rounded-2xl bg-[#e9e2cf] text-[#2a2418] p-6 font-mono text-sm relative shadow-2xl"><div class="absolute top-4 right-4 border-2 border-red-700 text-red-700 px-2 py-0.5 rotate-6 font-bold text-xs">TOP SECRET</div>
+          <div class="font-bold text-lg mb-1">PROJECT: BABYMAKER3000</div><div class="mb-4 text-xs">FILE #3000 · CLEARANCE LEVEL: ROMANTIC</div>
+          <p class="leading-7">The device combines <span class="redact px-1">mood lighting</span>, a <span class="redact px-1">Barry White playlist</span> and an automated <span class="redact px-1">candle dispenser</span>. Operation takes approximately <span class="redact px-1">4 minutes (optimistic)</span>. Side effects include <span class="redact px-1">twins</span>, <span class="redact px-1">18 years of expenses</span> and <span class="redact px-1">a minivan</span>.</p></div>
+        <div class="${CARD} space-y-4"><div class="font-display text-2xl text-white">ENTER CLEARANCE CODE</div><form data-form class="flex gap-2"><input data-in maxlength="10" class="${IN} flex-1 font-mono tracking-[.3em]" placeholder="••••"><button class="${B}">Unlock</button></form><div data-msg class="text-sm min-h-[1.25rem]"></div><div data-reveal></div></div></div>`;
+      q('form').onsubmit = e => {
+        e.preventDefault(); const v = q('in').value.trim(); q('in').value = ''; tries++;
+        if (v === '3000' || tries >= 4) {
+          q('msg').className = 'text-sm text-emerald-400'; q('msg').textContent = v === '3000' ? '✅ ACCESS GRANTED' : '✅ ACCESS GRANTED (we felt sorry for you)';
+          q('reveal').innerHTML = `<div class="pop rounded-xl bg-white/5 p-4"><div class="text-6xl mb-2">🛏️🕯️🎶👶</div><div class="text-white">It’s a bed with a built-in Bluetooth speaker that only plays slow jams.</div><div class="text-xs text-neutral-500 mt-2">Lifetime warranty: 18 years. Hint for next time: the code was in the name.</div></div>`;
+          seq([392, 523, 659, 784], .15, 'sine');
+        } else {
+          q('msg').className = 'text-sm text-ember'; q('msg').textContent = `⛔ ACCESS DENIED (${tries}/3)` + (tries === 3 ? ' — hint: read the name again.' : '');
+          const f = q('form'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); seq([880, 660, 880, 660], .1, 'square', .06);
+        }
+      };
+    });
+
+    def('Maison Déchet', 'Browse the collection. Click a piece for its certificate of authenticity.', (el) => {
+      const [q] = sel(el);
+      const items = [
+        ['Le Bracelet', 'Masking tape, 1 roll', 1450, '🧻', false],
+        ['La Pochette', 'Resealable sandwich bag', 2900, '👝', false],
+        ['Sculpture Nº 4', 'Crushed soda can', 8700, '🥫', true],
+        ['Le Collier', 'Bread-bag twist ties, 14 pcs', 990, '📿', false],
+        ['L’Air de Paris', 'Air from a metro station, sealed', 340, '🫙', false],
+        ['Le Cabas', 'Black trash bag, worn once', 3200, '🛍️', false],
+      ];
+      let bag = 0;
+      el.innerHTML = `<div class="rounded-2xl bg-[#f6f2ea] text-[#1c1a17] p-6 sm:p-8"><div class="flex justify-between items-baseline mb-6 border-b border-black/10 pb-4"><span class="font-serif text-3xl tracking-[.2em]">MAISON DÉCHET</span><span class="text-sm">Bag (<span data-bag>0</span>) · <span data-tot>€0</span></span></div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">${items.map((it, i) => `<button data-i="${i}" class="text-left group"><div class="aspect-[4/5] bg-white grid place-items-center text-6xl mb-3 relative group-hover:shadow-xl transition">${it[3]}${it[4] ? '<span class="absolute top-2 left-2 text-[10px] tracking-[.2em] bg-black text-white px-2 py-0.5">SOLD OUT</span>' : ''}</div><div class="font-serif text-lg">${it[0]}</div><div class="text-xs text-black/50">${it[1]}</div><div class="text-sm mt-1">€${it[2].toLocaleString('fr-FR')}</div></button>`).join('')}</div>
+        <div data-modal class="mt-6"></div></div>`;
+      el.onclick = e => {
+        const b = e.target.closest('[data-i]'), add = e.target.closest('[data-add]');
+        if (b) { const it = items[+b.dataset.i]; q('modal').innerHTML = `<div class="pop border border-black/15 bg-white p-6 grid sm:grid-cols-[120px_1fr] gap-6 items-center"><div class="text-7xl text-center">${it[3]}</div><div><div class="text-[10px] tracking-[.3em] text-black/50">CERTIFICATE OF AUTHENTICITY Nº ${Math.floor(rnd(1000, 9999))}</div><div class="font-serif text-2xl">${it[0]}</div><p class="text-sm text-black/70 mt-1">Hand-selected ${it[1].toLowerCase()}. Each piece is unique, if you squint. Do not recycle.</p><div class="flex items-center gap-4 mt-3"><span class="font-serif text-xl">€${it[2].toLocaleString('fr-FR')}</span>${it[4] ? '<span class="text-xs tracking-widest">JOIN WAITLIST (4 YEARS)</span>' : `<button data-add="${b.dataset.i}" class="px-5 py-2 bg-black text-white text-xs tracking-[.2em]">ADD TO BAG</button>`}</div></div></div>`; }
+        if (add) { bag += items[+add.dataset.add][2]; q('bag').textContent = +q('bag').textContent + 1; q('tot').textContent = '€' + bag.toLocaleString('fr-FR'); add.textContent = 'ADDED ✓'; tone(1046, .12, 'sine'); }
+      };
+    });
+
+    def('Beep Talk', 'Send a sound. Can you guess what your friend means? (Peek at the dictionary.)', (el, ctx) => {
+      const [q] = sel(el);
+      const B6 = [
+        { c: 'bg-sky-500', m: 'hey 👋', p: () => seq([1200, 0, 1200], .08, 'sine') },
+        { c: 'bg-emerald-500', m: 'yes', p: () => sweep(500, 1200, .25, 'sine', 0, .12) },
+        { c: 'bg-rose-500', m: 'no', p: () => sweep(1000, 300, .3, 'sine', 0, .12) },
+        { c: 'bg-amber-400', m: 'lol', p: () => seq([900, 1100, 900, 1100], .06, 'square', .06) },
+        { c: 'bg-violet-500', m: 'I’m sad', p: () => tone(220, .7, 'triangle') },
+        { c: 'bg-orange-500', m: 'COME HERE', p: () => seq([1500, 1500, 1500, 1500, 1500, 1500], .05, 'square', .06) },
+      ];
+      let dict = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6">
+        <div class="rounded-2xl bg-white/5 border border-white/10 flex flex-col h-[380px]"><div class="p-3 border-b border-white/10 text-sm text-neutral-400">🔊 Chat with <b class="text-white">Ivana</b></div><div data-log class="flex-1 overflow-y-auto p-3 space-y-2"></div></div>
+        <div class="space-y-3"><div class="grid grid-cols-3 gap-2">${B6.map((b, i) => `<button data-b="${i}" class="${b.c} aspect-square rounded-2xl grid place-items-center text-white text-2xl hover:scale-105 active:scale-95 transition shadow-lg">♪<span data-dm class="hidden text-[10px] font-semibold">${b.m}</span></button>`).join('')}</div>
+          <label class="flex items-center gap-2 text-sm text-neutral-300"><input data-dict type="checkbox" class="accent-red-500"> Show dictionary (cheating)</label></div></div>`;
+      const bubble = (i, me) => {
+        const b = B6[i], d = document.createElement('div'); d.className = `pop flex ${me ? 'justify-end' : ''}`;
+        d.innerHTML = `<button data-replay="${i}" class="flex items-center gap-2 px-3 py-2 rounded-2xl ${me ? 'bg-ember' : 'bg-white/10'} text-white text-sm"><span class="w-4 h-4 rounded-full ${b.c}"></span><span class="bars">${'<i></i>'.repeat(4)}</span><span data-dm class="${dict ? '' : 'hidden'} text-xs opacity-80">${b.m}</span></button>`;
+        q('log').append(d); q('log').scrollTop = 1e6; b.p();
+      };
+      el.onclick = e => {
+        const b = e.target.closest('[data-b]'), r = e.target.closest('[data-replay]');
+        if (b) { bubble(+b.dataset.b, true); ctx.after(() => bubble(Math.floor(rnd(0, B6.length)), false), rnd(1200, 2200)); }
+        if (r) B6[+r.dataset.replay].p();
+      };
+      q('dict').onchange = e => { dict = e.target.checked; el.querySelectorAll('[data-dm]').forEach(s => s.classList.toggle('hidden', !dict)); };
+      ctx.after(() => bubble(0, false), 600);
+    });
+
+    def('Kokošinjac', 'Start a rumour, pass it along the henhouse, watch it mutate.', (el) => {
+      const [q] = sel(el);
+      const esc8 = [' Apparently she looked sad.', ' Word is she paid in cash. Suspicious.', ' My cousin says it was a disguise.', ' Allegedly a helicopter was involved.', ' Police? Maybe. Probably. Definitely.', ' Also she is secretly three raccoons in a trench coat. 🦝'];
+      const hens = ['Kokoš_23', 'PilićNews', 'TetaMira', 'Kvočka99', 'GossipGirl_ZG', 'Pijetao'];
+      const reacts = ['I KNEW IT 😱', 'nooooo', 'my aunt confirmed', 'source?? (don’t need one)', 'this is huge', 'sharing to every group chat'];
+      let base = '', stage = 0, shares = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_300px] gap-6"><div class="space-y-4">
+          <form data-form class="flex gap-2"><input data-in maxlength="80" class="${IN} flex-1" value="A famous singer was seen buying bread."><button class="${B}">🐔 Post</button></form>
+          <div data-card class="${CARD} min-h-[120px] text-neutral-500">The henhouse is quiet. Post something…</div><div data-cmts class="space-y-2"></div></div>
+        <div class="space-y-3"><button data-pass class="${B} w-full" disabled>🐔 Pass it on</button>
+          <div class="${CARD}"><div class="${LBL}">Truth meter</div><div class="h-3 bg-white/10 rounded-full overflow-hidden mt-2"><div data-truth class="h-full bg-emerald-400 transition-all duration-500" style="width:100%"></div></div><div class="flex justify-between text-xs text-neutral-500 mt-2"><span>Shares: <b data-shares class="text-white">0</b></span><span data-tv>100%</span></div></div>
+          <div data-warn class="text-sm text-ember min-h-[1.25rem]"></div></div></div>`;
+      const draw = () => {
+        q('pass').disabled = !base || stage >= esc8.length;
+        if (!base) return;
+        const text = base + esc8.slice(0, stage).join('');
+        q('card').innerHTML = `<div class="flex items-center gap-2 text-xs text-neutral-500 mb-2"><span>🐔 ${stage ? 'retold by @' + hens[stage % hens.length] : 'posted by @you'}</span><span>· ${stage} retellings</span></div><div class="text-white text-lg ${stage > 3 ? 'font-display uppercase tracking-wide' : ''}">${stage > 4 ? 'SHOCKING: ' : ''}${esc(text)}</div>`;
+        const truth = Math.max(0, 100 - stage * 18);
+        q('truth').style.width = truth + '%'; q('truth').className = `h-full transition-all duration-500 ${truth > 60 ? 'bg-emerald-400' : truth > 25 ? 'bg-amber-400' : 'bg-ember'}`;
+        q('tv').textContent = truth + '%'; q('shares').textContent = shares.toLocaleString('en-US');
+        q('warn').textContent = stage >= esc8.length ? '⚠️ This rumour now has its own lawyer. Gossip responsibly.' : '';
+        q('pass').disabled = !base || stage >= esc8.length;
+      };
+      q('form').onsubmit = e => { e.preventDefault(); const v = q('in').value.trim(); if (!v) return; base = /[.!?]$/.test(v) ? v : v + '.'; stage = 0; shares = 1; q('cmts').innerHTML = ''; draw(); };
+      q('pass').onclick = () => {
+        stage++; shares = Math.floor(shares * rnd(3, 7) + 10); tone(600 + stage * 80, .08, 'square', 0, .05);
+        const c = document.createElement('div'); c.className = 'pop text-sm text-neutral-300'; c.innerHTML = `<b class="text-amber-300">@${pick(hens)}</b> ${pick(reacts)}`; q('cmts').prepend(c);
+        draw();
+      };
+      draw();
+    });
+
+    def('Brave Mode', 'A normal professional profile. Now flip on Brave Mode.', (el) => {
+      const [q] = sel(el);
+      const P = [
+        { n: 'Marko Horvat', e: '👨🏻‍💼', job: 'Senior Data Engineer at FinCorp', bj: 'Senior Data Engineer · Senior Cuddle Engineer', sk: ['SQL', 'Python', 'Stakeholder management'], bs: ['Holding hands', 'Remembering birthdays', 'Ordering for two'], ab: 'Passionate about scalable data pipelines.', bab: 'Passionate about scalable pipelines and long walks to the coffee machine.' },
+        { n: 'Petra Kovač', e: '👩🏼‍💼', job: 'Head of Marketing at Brightly', bj: 'Head of Marketing · Head of Your Heart', sk: ['Brand strategy', 'SEO', 'Public speaking'], bs: ['Sarcasm', 'Brunch', 'Excel pivot tables (seriously)'], ab: 'Building brands people love.', bab: 'Building brands people love. Could build something with you too.' },
+        { n: 'Ivan Babić', e: '🧑🏽‍💻', job: 'Product Designer at Nimbus', bj: 'Product Designer · Designs a great first date', sk: ['Figma', 'User research', 'Prototyping'], bs: ['Good kerning', 'Cooking risotto', 'Dark mode everything'], ab: 'Making complex things simple.', bab: 'Making complex things simple. Except feelings.' },
+      ];
+      let i = 0, brave = false;
+      el.innerHTML = `<div class="grid lg:grid-cols-[1fr_280px] gap-6 items-start"><div data-card></div>
+        <div class="space-y-3"><button data-toggle class="w-full flex items-center justify-between ${CARD} !p-4"><span class="text-white font-semibold">💘 Brave Mode</span><span data-sw class="w-12 h-7 rounded-full bg-white/15 relative transition"><span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-all"></span></span></button>
+          <p class="text-sm text-neutral-400">Chrome extension. Works on any site. HR has been notified.</p><div data-msg class="text-sm text-pink-300 min-h-[1.25rem]"></div></div></div>`;
+      const draw = () => {
+        const p = P[i], sw = q('sw');
+        sw.style.background = brave ? '#ec4899' : ''; sw.firstElementChild.style.left = brave ? '24px' : '4px';
+        q('card').innerHTML = `<div class="pop rounded-2xl overflow-hidden border ${brave ? 'border-pink-400/50 bg-gradient-to-b from-pink-500/15 to-transparent' : 'border-white/10 bg-white/5'} transition"><div class="h-20 ${brave ? 'bg-gradient-to-r from-pink-500 to-rose-500' : 'bg-gradient-to-r from-sky-800 to-slate-700'}"></div>
+          <div class="p-5 -mt-12"><div class="w-20 h-20 rounded-full bg-zinc-900 border-4 ${brave ? 'border-pink-400' : 'border-zinc-800'} grid place-items-center text-4xl">${p.e}</div>
+          <div class="text-white text-xl font-semibold mt-2">${p.n} ${brave ? '<span class="text-sm text-pink-300">· 31 · 4 km</span>' : ''}</div><div class="text-neutral-300">${brave ? p.bj : p.job}</div><div class="text-sm text-neutral-400 mt-2">${brave ? p.bab : p.ab}</div>
+          <div class="${LBL} mt-4 mb-2">${brave ? 'Turn-ons' : 'Skills'}</div><div class="flex flex-wrap gap-2">${(brave ? p.bs : p.sk).map(s => `<span class="text-xs px-3 py-1 rounded-full ${brave ? 'bg-pink-500/20 text-pink-200' : 'bg-white/10 text-neutral-300'}">${s} · ${Math.floor(rnd(3, 60))}</span>`).join('')}</div>
+          <div class="flex flex-wrap gap-2 mt-5">${brave ? `<button data-nope class="w-12 h-12 rounded-full bg-white/10 text-xl">❌</button><button data-shot class="flex-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold">💘 Shoot your shot</button><button data-yes class="w-12 h-12 rounded-full bg-white/10 text-xl">💚</button>` : `<button class="px-5 py-2 rounded-full bg-sky-600 text-white text-sm font-semibold">+ Connect</button><button class="px-5 py-2 rounded-full border border-sky-500 text-sky-300 text-sm">Message</button>`}</div></div></div>`;
+      };
+      q('toggle').onclick = () => { brave = !brave; q('msg').textContent = ''; brave ? sweep(400, 900, .3, 'sine', 0, .08) : null; draw(); };
+      el.onclick = e => {
+        if (e.target.closest('[data-nope]')) { i = (i + 1) % P.length; q('msg').textContent = 'Swiped left on a coworker. Bold.'; draw(); }
+        if (e.target.closest('[data-yes]')) { q('msg').textContent = `💞 It’s a match! ${P[i].n.split(' ')[0]} endorsed you for “Charm”.`; seq([659, 880, 1046], .1, 'sine'); ctx_next(); }
+        if (e.target.closest('[data-shot]')) q('msg').textContent = `Message sent: “Saw your Q3 results. Impressive. Dinner?”`;
+      };
+      const ctx_next = () => setTimeout(() => { i = (i + 1) % P.length; if (el.isConnected) draw(); }, 1200);
+      draw();
+    });
+
+    def('Hammered Hero', 'Pick a crisis. Send in the hero. Count the damage.', (el, ctx) => {
+      const [q] = sel(el);
+      const crises = [
+        { n: 'Cat stuck in a tree', e: '🐈🌳', fix: 'rescues the cat (and, accidentally, a second cat)', dmg: ['the tree', 'a fire truck', 'the neighbour’s greenhouse'] },
+        { n: 'Bank robbery', e: '🏦💰', fix: 'stops the robbers by falling on them', dmg: ['the bank', 'the vault door', 'three parked Fiats'] },
+        { n: 'Granny crossing the street', e: '👵🚸', fix: 'gets granny across — by flying her over the city', dmg: ['the crosswalk', 'a tram', 'the concept of traffic'] },
+        { n: 'Burning building', e: '🏢🔥', fix: 'puts out the fire. Don’t ask how.', dmg: ['the rest of the building', 'a fire hydrant', 'his dignity'] },
+      ];
+      let ep = 0, token = 0, totalDmg = 0;
+      el.innerHTML = `<div class="grid lg:grid-cols-[280px_1fr] gap-6"><div class="space-y-2">${crises.map((c, i) => `<button data-c="${i}" class="w-full flex items-center gap-3 p-3 rounded-xl border border-white/10 hover:border-ember/60 transition text-left"><span class="text-2xl">${c.e}</span><span class="text-white text-sm">${c.n}</span></button>`).join('')}
+          <div class="${CARD} !p-4"><div class="${LBL}">Season damage</div><div data-total class="font-display text-3xl text-ember">$0</div></div></div>
+        <div class="rounded-2xl bg-black border border-white/10 overflow-hidden"><div class="px-5 py-3 bg-gradient-to-r from-ember to-amber-500 flex justify-between items-center"><span class="font-display text-2xl text-white tracking-wide">HAMMERED HERO</span><span data-ep class="text-xs text-white/80">AI SERIES</span></div><div data-log class="p-5 space-y-3 min-h-[260px] text-neutral-200"><div class="text-neutral-500">Pick a crisis to generate an episode.</div></div><div data-stats class="grid grid-cols-3 border-t border-white/10 text-center"></div></div></div>`;
+      el.onclick = e => {
+        const b = e.target.closest('[data-c]'); if (!b) return; const c = crises[+b.dataset.c], my = ++token; ep++;
+        const d1 = pick(c.dmg), drinks = Math.floor(rnd(4, 14)), dmg = Math.floor(rnd(40, 900)) * 1000; totalDmg += dmg;
+        const lines = [
+          `🍺 Hammered Hero is ${pick(['six beers deep', 'on his 4th rakija', 'mid-karaoke', 'asleep in a kebab shop'])} when the call comes in: <b>${c.n}</b>.`,
+          `🦸 He takes off… ${pick(['straight through the bar ceiling', 'into a billboard first', 'sideways, somehow', 'after three failed attempts'])}.`,
+          `💥 Arrives at the scene and immediately destroys ${d1}.`,
+          `✅ Somehow, he ${c.fix}.`,
+          `🤢 ${pick(['Throws up on the mayor.', 'Hugs a police horse for 20 minutes.', 'Gives a speech nobody understands.', 'Falls asleep mid-air.'])} Roll credits.`,
+        ];
+        q('ep').textContent = `S01 · E${String(ep).padStart(2, '0')}`; q('log').innerHTML = ''; q('stats').innerHTML = '';
+        lines.forEach((l, i) => ctx.after(() => { if (my !== token) return; const p = document.createElement('div'); p.className = 'pop'; p.innerHTML = l; q('log').append(p); tone(300 + i * 120, .1, 'triangle', 0, .06); if (i === 2) sweep(200, 40, .5, 'sawtooth', 0, .15); }, i * 900));
+        ctx.after(() => { if (my !== token) return; q('stats').innerHTML = [['Lives saved', 1], ['Drinks', drinks], ['Damage', fmt(dmg)]].map(([k, v]) => `<div class="p-3 border-r border-white/10 last:border-0"><div class="text-[10px] uppercase tracking-widest text-neutral-500">${k}</div><div class="font-display text-2xl text-white">${v}</div></div>`).join(''); q('total').textContent = fmt(totalDmg); }, lines.length * 900);
+      };
+    });
+
+    // =====================================================================
+    //  LIST RENDERING
+    // =====================================================================
     let activeCat = 'All', query = '', showNsfw = true;
+    let openIdx = null, openCtx = null;
 
     const visibleBase = () => ideas.filter(i => showNsfw || !i.nsfw);
 
@@ -187,36 +1846,88 @@
         (!q || `${i.name} ${i.desc} ${i.cat}`.toLowerCase().includes(q)));
     }
 
+    const panelShell = (hint) => `<div class="max-w-7xl mx-auto px-5 sm:px-10 pb-12 sm:pb-16">
+      <div class="rounded-3xl border border-white/10 bg-[#1d0907]/90 p-5 sm:p-8 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-5 border-b border-white/10">
+          <div class="flex items-center gap-3 min-w-0"><span class="w-2 h-2 rounded-full bg-ember animate-pulse shrink-0"></span><span class="text-xs uppercase tracking-[.3em] text-ember shrink-0">Prototype</span><span class="text-sm text-neutral-400">${esc(hint)}</span></div>
+          <button data-close class="text-sm text-neutral-500 hover:text-white transition">Close ✕</button>
+        </div>
+        <div class="stage"></div>
+      </div></div>`;
+
+    function closeOpen() {
+      if (openIdx === null) return;
+      if (openCtx) { openCtx.dispose(); openCtx = null; }
+      const art = document.querySelector(`.item[data-idx="${openIdx}"]`);
+      if (art) {
+        art.classList.remove('open');
+        const p = art.querySelector('.panel'); p.classList.add('hidden'); p.innerHTML = '';
+        art.querySelector('.row').setAttribute('aria-expanded', 'false');
+        art.querySelector('.try-label').textContent = 'Try the prototype';
+      }
+      openIdx = null;
+    }
+
+    function openItem(idx, scroll = true) {
+      closeOpen();
+      const art = document.querySelector(`.item[data-idx="${idx}"]`);
+      const demo = DEMOS[ideas[idx].name];
+      if (!art || !demo) return;
+      const p = art.querySelector('.panel');
+      p.innerHTML = panelShell(demo.hint);
+      const el = document.createElement('div');
+      p.querySelector('.stage').append(el);
+      openCtx = makeCtx();
+      try { demo.fn(el, openCtx); }
+      catch (err) { console.error(err); el.innerHTML = '<p class="text-neutral-400">This prototype failed to load.</p>'; }
+      p.classList.remove('hidden');
+      art.classList.add('open', 'in');
+      art.querySelector('.row').setAttribute('aria-expanded', 'true');
+      art.querySelector('.try-label').textContent = 'Close prototype';
+      openIdx = idx;
+      if (scroll) requestAnimationFrame(() => art.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+
     function renderGrid() {
+      const wasOpen = openIdx;
+      closeOpen();
       const list = filtered();
       $('empty').classList.toggle('hidden', list.length > 0);
       $('grid').innerHTML = list.map(i => {
-        const num = String(ideas.indexOf(i) + 1).padStart(2, '0');
+        const idx = ideas.indexOf(i);
+        const num = String(idx + 1).padStart(2, '0');
         return `
-        <article id="idea-${num}" class="row reveal border-b border-white/10">
-          <div class="max-w-7xl mx-auto px-5 sm:px-10 py-10 sm:py-14 grid grid-cols-12 gap-x-6 gap-y-4 items-center">
-            <div class="col-span-12 lg:col-span-2 flex lg:flex-col items-center lg:items-start gap-4">
-              <span class="outline-num font-display text-6xl sm:text-7xl leading-none">${num}</span>
-              <span class="emoji text-4xl sm:text-5xl inline-block">${i.emoji}</span>
-            </div>
-            <div class="col-span-12 lg:col-span-6">
-              <div class="flex items-center gap-3 mb-2">
-                <span class="cat text-xs uppercase tracking-[.3em] ${catColors[i.cat]} transition-colors">${esc(i.cat)}</span>
-                ${i.nsfw ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-ember">18+</span>' : ''}
+        <article id="idea-${num}" data-idx="${idx}" class="item reveal border-b border-white/10">
+          <div class="row" role="button" tabindex="0" aria-expanded="false" aria-controls="panel-${num}">
+            <div class="max-w-7xl mx-auto px-5 sm:px-10 py-10 sm:py-14 grid grid-cols-12 gap-x-6 gap-y-4 items-center">
+              <div class="col-span-12 lg:col-span-2 flex lg:flex-col items-center lg:items-start gap-4">
+                <span class="outline-num font-display text-6xl sm:text-7xl leading-none">${num}</span>
+                <span class="emoji text-4xl sm:text-5xl inline-block">${i.emoji}</span>
               </div>
-              <h2 class="title font-display uppercase text-5xl sm:text-6xl lg:text-7xl text-white leading-[.95] tracking-tight break-words">${esc(i.name)}</h2>
+              <div class="col-span-12 lg:col-span-6">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="cat text-xs uppercase tracking-[.3em] ${catColors[i.cat]} transition-colors">${esc(i.cat)}</span>
+                  ${i.nsfw ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-ember">18+</span>' : ''}
+                </div>
+                <h2 class="title font-display uppercase text-5xl sm:text-6xl lg:text-7xl text-white leading-[.95] tracking-tight break-words">${esc(i.name)}</h2>
+              </div>
+              <div class="col-span-12 lg:col-span-4">
+                <p class="desc text-lg sm:text-xl text-neutral-400 leading-relaxed transition-colors">${esc(i.desc)}</p>
+                <span class="try mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[.25em] text-ember transition-colors"><span class="chev text-base leading-none">＋</span><span class="try-label">Try the prototype</span></span>
+              </div>
             </div>
-            <p class="desc col-span-12 lg:col-span-4 text-lg sm:text-xl text-neutral-400 leading-relaxed transition-colors">${esc(i.desc)}</p>
           </div>
+          <div id="panel-${num}" class="panel hidden"></div>
         </article>`;
       }).join('');
       observeRows();
+      if (wasOpen !== null && list.includes(ideas[wasOpen])) openItem(wasOpen, false);
     }
 
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    function observeRows() { document.querySelectorAll('.row.reveal').forEach(r => io.observe(r)); }
+    }, { threshold: 0.05 });
+    function observeRows() { document.querySelectorAll('.item.reveal').forEach(r => io.observe(r)); }
 
     function renderMarquee() {
       const names = ideas.map(i => `${esc(i.name)} <span class="text-white/30">✦</span>`).join(' ');
@@ -224,6 +1935,17 @@
     }
 
     function renderAll() { renderStats(); renderFilters(); renderGrid(); }
+
+    const toggleItem = idx => (openIdx === idx ? closeOpen() : openItem(idx));
+    $('grid').addEventListener('click', e => {
+      if (e.target.closest('[data-close]')) { const idx = openIdx; closeOpen(); const art = document.querySelector(`.item[data-idx="${idx}"]`); art && art.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+      const row = e.target.closest('.row');
+      if (row) toggleItem(+row.closest('.item').dataset.idx);
+    });
+    $('grid').addEventListener('keydown', e => {
+      const row = e.target.closest && e.target.closest('.row');
+      if (row && e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleItem(+row.closest('.item').dataset.idx); }
+    });
 
     $('filters').addEventListener('click', e => {
       const b = e.target.closest('button[data-cat]'); if (!b) return;
@@ -237,8 +1959,9 @@
       document.querySelectorAll('.spotlight').forEach(x => x.classList.remove('spotlight'));
       el.classList.add('in');
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.classList.add('spotlight');
-      setTimeout(() => el.classList.remove('spotlight'), 2500);
+      const row = el.querySelector('.row');
+      row.classList.add('spotlight');
+      setTimeout(() => row.classList.remove('spotlight'), 2500);
     });
 
     $('year').textContent = new Date().getFullYear();
